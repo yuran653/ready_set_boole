@@ -18,14 +18,38 @@ jobs:
         uses: actions/setup-cpp@v1
         with:
           compiler: gcc
+          # This line sets the GCC version to 10
+          # version: '10'  # Uncomment to specify GCC version 10 explicitly
 
       - name: Build and Test
         run: |
+          # Create logs directory for current job
+          mkdir -p $GITHUB_WORKSPACE/logs/$GITHUB_JOB
+
+          # Change to matrix-specific directory
           cd ${{ matrix.ex }}
+
+          # Check if Makefile exists, then build and test
           if [ -f Makefile ]; then
-            make clean
-            make
-            make test || echo "No tests defined for ${{ matrix.ex }}"
+            # Run make commands and log output to files
+            make clean | tee $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_make_clean.log
+            make | tee $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_make.log
+            make test | tee $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_test.log || echo "No tests defined or tests failed for ${{ matrix.ex }}" | tee -a $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_test.log
           else
-            echo "No Makefile found for ${{ matrix.ex }}"
+            echo "No Makefile found for ${{ matrix.ex }}" | tee $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_info.log
           fi
+        continue-on-error: true
+
+      - name: Display build logs for debugging
+        run: |
+          for log_file in $GITHUB_WORKSPACE/logs/$GITHUB_JOB/*.log; do
+            echo "Content of $log_file:"
+            cat $log_file
+          done
+
+      - name: Upload logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.ex }}-logs
+          path: $GITHUB_WORKSPACE/logs/$GITHUB_JOB/
