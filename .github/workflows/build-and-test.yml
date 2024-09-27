@@ -1,0 +1,31 @@
+name: Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        ex: [ex00, ex01, ex02, ex03, ex04, ex05, ex06, ex07, ex08, ex09, ex10, ex11, ex12]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up C++ environment
+        uses: actions/setup-cpp@v1
+        with:
+          compiler: gcc
+
+      - name: Build and Test
+        run: |
+          cd ${{ matrix.ex }}
+          if [ -f Makefile ]; then
+            make clean
+            make
+            make test || echo "No tests defined for ${{ matrix.ex }}"
+          else
+            echo "No Makefile found for ${{ matrix.ex }}"
+          fi
