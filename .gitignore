@@ -1,0 +1,83 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Ubuntu desktop service stores
+.Trash-*
+
+# Ignore VS Code workspace settings
+.vscode/
+.vscode/*
+
+# Ignore compiled object files and binaries
+*.o
+*.obj
+*.exe
+*.out
+*.app
+*.dSYM/
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# Ignore CMake build directories
+build/
+cmake-build-*/
+
+# Ignore temporary files created by editors
+*.swp
+*.swo
+*~
+
+# Ignore backup files
+*.bak
+*.tmp
+*.temp
+
+# Ignore log files and temporary data
+*.log
+*.dat
+
+# Ignore directories used by common build systems
+Makefile.in
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+
+# Ignore tags and databases used by ctags, gtags (GNU Global), etc.
+tags
+TAGS
+.gtags
+.gpath
+.gsyms
+
+# Ignore coverage and profiling files
+*.gcda
+*.gcno
+*.gcov
+*.prof
+*.profraw
+*.cov
+*.profdata
+
+# Ignore generated documentation
+docs/generated/
+
+# Ignore debugging symbols
+*.debug
+
+# Ignore clang-format and clang-tidy generated files
+*.orig
+*.rej
+
+# Ignore generated dependency files
+*.d
+
+# Ignore archives
+*.tar
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
