@@ -84,3 +84,7 @@ docs/generated/
 *.tar.gz
 *.tar.bz2
 *.tar.xz
+
+# Create directories script
+create_dirs.sh
+
