@@ -17,8 +17,9 @@ jobs:
       - name: Set up C++ environment
         uses: actions/setup-cpp@v1
         with:
-          compiler: gcc
-          # version: '10'  # Uncomment to specify GCC version 10 explicitly
+          compiler: g++
+          cpp-version: '17'  # Specify C++17 standard
+
 
       - name: Create logs directory
         run: mkdir -p $GITHUB_WORKSPACE/logs/$GITHUB_JOB
