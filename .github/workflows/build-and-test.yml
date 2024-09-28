@@ -14,13 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up C++ environment
-        uses: actions/setup-cpp@v1
-        with:
-          compiler: g++
-          cpp-version: '17'  # Specify C++17 standard
-
-
       - name: Create logs directory
         run: mkdir -p $GITHUB_WORKSPACE/logs/$GITHUB_JOB
 
