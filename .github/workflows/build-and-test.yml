@@ -10,12 +10,9 @@ jobs:
       matrix:
         ex: [ex00, ex01] #, ex02, ex03, ex04, ex05, ex06, ex07, ex08, ex09, ex10, ex11]
 
-    env:
-      ACTION_V: v4
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@${{ env.ACTION_V }}
+        uses: actions/checkout@v4
 
       - name: Create logs directory
         run: mkdir -p $GITHUB_WORKSPACE/logs/$GITHUB_JOB
@@ -42,7 +39,7 @@ jobs:
 
       - name: Upload logs as artifact
         if: always()
-        uses: actions/upload-artifact@${{ env.ACTION_V }}
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.ex }}-logs
           path: $GITHUB_WORKSPACE/logs/$GITHUB_JOB/
