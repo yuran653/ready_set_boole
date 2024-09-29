@@ -14,33 +14,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create logs directory
-        run: mkdir -p $GITHUB_WORKSPACE/logs/$GITHUB_JOB
-
       - name: Build and Test
         run: |
-          mkdir -p $GITHUB_WORKSPACE/logs/$GITHUB_JOB  # Ensure the directory exists
           cd ${{ matrix.ex }}
           if [ -f Makefile ]; then
-            set -x  # Enable command tracing
-            make clean > $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_make_clean.log 2>&1
-            make > $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_make.log 2>&1
-            make test > $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_test.log 2>&1 || echo "No tests defined for ${{ matrix.ex }}"
+            set -x
+            make clean
+            make
+            make test || echo "No tests defined for ${{ matrix.ex }}"
           else
-            echo "No Makefile found for ${{ matrix.ex }}" > $GITHUB_WORKSPACE/logs/$GITHUB_JOB/${{ matrix.ex }}_info.log
-          fi
-      
-      - name: Display build log for debugging
-        run: |
-          for log_file in $GITHUB_WORKSPACE/logs/$GITHUB_JOB/*.log; do
-            echo "Content of $log_file:"
-            cat $log_file
-          done
-
-      - name: Upload logs as artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.ex }}-logs
-          path: $GITHUB_WORKSPACE/logs/$GITHUB_JOB/
-
+            echo "No Makefile found for ${{ matrix.ex }}"
