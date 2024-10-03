@@ -24,3 +24,4 @@ jobs:
             make test || echo "No tests defined for ${{ matrix.ex }}"
           else
             echo "No Makefile found for ${{ matrix.ex }}"
+          fi
