@@ -1,10 +1,10 @@
-# Ready, Set, Boole! 
+# Ready, Set, Boole!
 
-**Ready, Set, Boole!** is an introduction to Boolean Algebra, designed to provide a comprehensive understanding of the mathematical foundations behind computational logic. This repository contains exercises and materials to help deepen the knowledge of Boolean algebra, set theory, and their critical role in computer science.
+**Ready, Set, Boole!** introduces Boolean Algebra and its role in computational logic. It focuses on key concepts such as Boolean operations and set theory, which are fundamental to computer science.
 
 ## Overview
 
-This project aims to explain how computers perform operations through logical processes. By completing the exercises provided, participants will gain an understanding of how essential logic operations like AND, OR, and XOR are utilized in computational systems. The project is ideal for those new to Boolean algebra or those wishing to reinforce their understanding of the subject.
+This project explains how computers use logical processes to perform operations. Through the exercises, participants will learn how logic operations like AND, OR, and XOR function in computational systems. It is suitable for both beginners and those looking to reinforce their knowledge of Boolean algebra.
 
 ## Key Concepts
 
@@ -12,6 +12,8 @@ This project aims to explain how computers perform operations through logical pr
 - **Set Theory**: Explore the relationship between logic and set theory, fundamental to both mathematics and computational theory.
 - **Logic Gates**: Understand the mechanics of logic gates and their applications in creating computational units such as adders and multipliers.
 - **Propositional Logic**: Become familiar with truth tables, propositional formulas, and logical forms such as Negation Normal Form (NNF) and Conjunctive Normal Form (CNF).
+
+---
 
 ## Exercise 00: Bitwise Addition
 
