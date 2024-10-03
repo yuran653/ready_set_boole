@@ -1,21 +1,17 @@
 #ifndef BITWISEMULT_HPP
 #define BITWISEMULT_HPP
 
-#include <iostream>
-#include <stdexcept>
+#include <cstdint>
 
 class BitwiseMult {
-public:
-    BitwiseMult() = delete;
-    ~BitwiseMult() = delete;
+    private:
+        BitwiseMult() = delete;
+        ~BitwiseMult() = delete;
 
-    static int bitwiseMult(int a, int b);
-
-    class InputError : public std::invalid_argument {
     public:
-        explicit InputError(const std::string& message)
-            : std::invalid_argument(message) {}
-    };
+        static uint32_t bitwise_mult(const uint32_t a, const uint32_t b);
+        static uint32_t bitwise_add(const uint32_t a, const uint32_t b);
+
 };
 
 #endif

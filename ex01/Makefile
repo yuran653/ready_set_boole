@@ -1,5 +1,5 @@
 # Variables
-NAME        := BitwiseMult
+NAME        := bitwisemult
 
 SRCDIR      := src
 OBJDIR      := object
