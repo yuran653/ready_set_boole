@@ -1,21 +1,15 @@
 #ifndef BITWISEADD_HPP
 #define BITWISEADD_HPP
 
-#include <iostream>
-#include <stdexcept>
+#include <cstdint>
 
 class BitwiseAdd {
-public:
-    BitwiseAdd() = delete;
-    ~BitwiseAdd() = delete;
+    private:
+        BitwiseAdd() = delete;
+        ~BitwiseAdd() = delete;
 
-    static int bitwiseAdd(int a, int b);
-
-    class InputError : public std::invalid_argument {
     public:
-        explicit InputError(const std::string& message)
-            : std::invalid_argument(message) {}
-    };
+        static uint32_t bitwise_add(const uint32_t a, const uint32_t b);
 };
 
 #endif
