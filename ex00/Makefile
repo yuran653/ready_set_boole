@@ -29,7 +29,7 @@ END         := "\033[0m"
 all: $(NAME)
 
 # Main target
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) Makefile
 	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 	@echo $(GREEN) "\n\tProject is compiled\n" $(END)
 
