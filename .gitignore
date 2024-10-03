@@ -21,9 +21,6 @@
 *.so
 *.dylib
 
-# Ignore binaries without extensions in exercise directories
-ex*/[!*.]*
-
 # Ignore CMake build directories
 build/
 cmake-build-*/
