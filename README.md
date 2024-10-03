@@ -1,75 +1,70 @@
 # Ready, Set, Boole!
 
-**Ready, Set, Boole!** introduces Boolean Algebra and its role in computational logic. It focuses on key concepts such as Boolean operations and set theory, which are fundamental to computer science.
+**Ready, Set, Boole!** presents Boolean Algebra and its significance in computational logic. It emphasizes key concepts such as Boolean operations and set theory, which are essential in the field of computer science.
 
 ## Overview
 
-This project explains how computers use logical processes to perform operations. Through the exercises, participants will learn how logic operations like AND, OR, and XOR function in computational systems. It is suitable for both beginners and those looking to reinforce their knowledge of Boolean algebra.
+This project demonstrates how computers utilize logical processes to perform operations. Through a series of exercises, it shows how core logic operations, including AND, OR, and XOR, are implemented in computational systems. It provides a practical exploration of Boolean algebra, suitable for a broad audience, from those unfamiliar with the subject to those seeking to reinforce their understanding.
 
 ## Key Concepts
 
-- **Boolean Algebra**: Learn the core concepts of Boolean operations, which serve as the building blocks of computer logic.
-- **Set Theory**: Explore the relationship between logic and set theory, fundamental to both mathematics and computational theory.
-- **Logic Gates**: Understand the mechanics of logic gates and their applications in creating computational units such as adders and multipliers.
-- **Propositional Logic**: Become familiar with truth tables, propositional formulas, and logical forms such as Negation Normal Form (NNF) and Conjunctive Normal Form (CNF).
+- **Boolean Algebra**: A mathematical framework for manipulating binary variables, serving as the foundation of computer logic. Boolean algebra allows for the representation and simplification of logical statements through operations such as conjunction, disjunction, and negation.
+- **Set Theory**: A branch of mathematical logic that studies sets, collections of distinct objects. Set theory underpins much of modern mathematical logic and provides a basis for understanding relationships between collections, often expressed in terms of union, intersection, and complement.
+- **Logic Gates**: The fundamental building blocks of digital circuits, which perform basic logical functions. These gates manipulate binary inputs (0s and 1s) to produce specific outputs, facilitating the creation of complex computational structures like adders and multipliers.
+- **Propositional Logic**: A formal system in logic that deals with propositions, which can either be true or false. Propositional logic is used to create truth tables and represent logical formulas, such as those in Negation Normal Form (NNF) and Conjunctive Normal Form (CNF), which are crucial in computational problem-solving and decision-making.
 
 ---
 
 ## Exercise 00: Bitwise Addition
 
-The first exercise in this project introduces the implementation of a binary addition function using bitwise operations. The objective is to simulate the addition of two unsigned integers without employing standard arithmetic operators such as `+` or `-`.
+This exercise demonstrates the implementation of binary addition using bitwise operations, avoiding the use of conventional arithmetic operators such as `+` or `-`.
 
 ### Objective:
-- Write a function that takes two natural numbers as input and returns their sum.
-  
+- Develop a function that takes two natural numbers and returns their sum using only bitwise operations.
+
 ### Constraints:
-- Only the following operations are permitted:
+- Permitted operations:
   - Bitwise AND (`&`)
   - Bitwise OR (`|`)
   - Bitwise XOR (`^`)
   - Left Shift (`<<`)
   - Right Shift (`>>`)
-  - Basic assignment (`=`) and comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`).
+  - Assignment (`=`)
+  - Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
 
-The function adds two numbers by iteratively calculating the carry using the AND operation and shifting it to the left. The XOR operation is used to compute the partial sum without the carry. This process continues until no more carry is left, at which point the XOR result represents the final sum.
-
-This exercise demonstrates how fundamental bitwise operations can replace conventional arithmetic in specific low-level computational contexts, highlighting the efficiency of logic-based computation.
+The function calculates the sum by repeatedly determining the carry using the AND operation and shifting it left. The XOR operation is used to compute the sum without the carry. This process continues until the carry is eliminated, with the final XOR result representing the sum.
 
 ---
 
 ## Exercise 01: Bitwise Multiplication
 
-The second exercise extends the logic-based approach by implementing a binary multiplication function using bitwise operations, simulating the multiplication of two unsigned integers without using the `*` operator.
+This exercise introduces a method for binary multiplication using bitwise operations, simulating the multiplication of two unsigned integers without utilizing the `*` operator.
 
 ### Objective:
-- Write a function that multiplies two natural numbers using bitwise operations.
+- Create a function that multiplies two natural numbers through bitwise operations.
 
 ### Constraints:
-- Only the following operations are permitted:
+- Permitted operations:
   - Bitwise AND (`&`)
   - Bitwise OR (`|`)
   - Bitwise XOR (`^`)
   - Left Shift (`<<`)
   - Right Shift (`>>`)
-  - Basic assignment (`=`) and comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`).
+  - Assignment (`=`)
+  - Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
 
-The function employs a technique akin to long multiplication, where each bit in the multiplier is examined. If the current bit is set (i.e., equal to 1), the multiplicand is added to the result, shifted accordingly based on the bit’s position. This process repeats for every bit in the multiplier. The key bitwise operation here is shifting the multiplicand left to simulate powers of two.
-
-This exercise showcases how bitwise operations can efficiently handle multiplication, leveraging shifts and addition to perform the task without directly using the multiplication operator.
+The function implements a bitwise multiplication algorithm similar to long multiplication, examining each bit of the multiplier. When a bit is set, the multiplicand is added to the result, shifted based on the bit’s position. This process is repeated for all bits of the multiplier.
 
 ---
 
 ## Exercise 02: Gray Code Conversion
 
-In this exercise, the objective is to implement a function that converts a given natural number into its equivalent **Gray Code** representation. Gray Code is a binary numeral system where two successive values differ in only one bit, which minimizes errors in digital communication and transmission.
+This exercise focuses on the conversion of a natural number into its Gray Code equivalent, a binary numeral system where two successive values differ by only one bit, widely used in error minimization during data transmission.
 
 ### Objective:
-- Write a function that converts an integer into its corresponding Gray Code.
+- Implement a function that converts an integer into Gray Code.
 
 ### Constraints:
-- The conversion must adhere to the rules of Gray Code, where each successive number differs by a single bit.
+- The conversion must follow the Gray Code rule, where each successive value differs by exactly one bit.
 
-Gray Code can be generated by using a simple formula: 
-- For any given number `n`, the Gray Code equivalent is computed as `n ⊕ (n >> 1)`.
-
-This exercise provides an opportunity to explore how binary manipulations and bitwise operations can be applied to real-world digital systems, especially in error correction and data encoding. Gray Code is commonly used in scenarios where minimizing bit errors during transitions is critical, such as in position encoders and communication protocols.
+Gray Code is generated using the formula `n ⊕ (n >> 1)`, where `n` is the input number. This bitwise manipulation technique minimizes errors in scenarios requiring precise binary transitions, such as digital encoders and communication protocols.
