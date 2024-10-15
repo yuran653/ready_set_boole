@@ -1,5 +1,5 @@
 # Variables
-NAME        := graycode
+NAME        := booleanevaluation
 
 SRCDIR      := src
 OBJDIR      := object
