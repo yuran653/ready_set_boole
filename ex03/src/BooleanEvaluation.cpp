@@ -12,7 +12,7 @@ bool BooleanEvaluation::booleanEvaluation(const std::string& rpn) {
             if (c == '!' && rpn.size() > 1) {
                 a = s.top(); s.pop();
             } else if (s.size() < 2) {
-                    throw std::underflow_error("Stack underflow: not enough values on the stack1");
+                    throw std::underflow_error("Stack underflow: not enough values on the stack");
             } else {
                 b = s.top(); s.pop();
                 a = s.top(); s.pop();
@@ -42,7 +42,7 @@ bool BooleanEvaluation::booleanEvaluation(const std::string& rpn) {
         }
     }
     if (s.empty())
-        throw std::underflow_error("Stack underflow: not enough values on the stack2");
+        throw std::underflow_error("Stack underflow: not enough values on the stack");
     if (s.size() != 1)
         throw std::overflow_error("Stack overflow: too many values on the stack");
     return s.top();

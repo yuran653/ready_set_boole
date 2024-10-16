@@ -8,9 +8,10 @@ class BitwiseMult {
         BitwiseMult() = delete;
         ~BitwiseMult() = delete;
 
+        static uint32_t bitwise_add(const uint32_t a, const uint32_t b);
+        
     public:
         static uint32_t bitwise_mult(const uint32_t a, const uint32_t b);
-        static uint32_t bitwise_add(const uint32_t a, const uint32_t b);
 
 };
 
