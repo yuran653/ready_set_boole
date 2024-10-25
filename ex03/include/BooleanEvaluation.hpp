@@ -2,7 +2,7 @@
 #define BOOLEANEVALUATION_HPP
 
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 #include <stack>
 #include <string>
 

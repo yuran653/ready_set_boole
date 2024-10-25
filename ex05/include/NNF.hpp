@@ -2,7 +2,7 @@
 #define NNF_HPP
 
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 #include <cctype>
 #include <stack>
 #include <string>

@@ -38,26 +38,30 @@ void apply_negation(std::stack<std::string> &st) {
 
 std::string NNF::toNNF(const std::string &formula) {
     std::stack<std::string> st;
-    for (char c : formula) {
-        c = std::toupper(c);
-        switch (c) {
+    for (char token : formula) {
+        token = std::toupper(token);
+        switch (token) {
             case 'A' ... 'Z':
-                st.push(std::string(1, c));
+                st.push(std::string(1, token));
                 break;
             case '&':
             case '|':
             case '>':
             case '=':
-                apply_binary_operator(st, c);
+                apply_binary_operator(st, token);
                 break;
             case '!':
                 apply_negation(st);
                 break;
             default:
-                throw std::runtime_error(std::string("Invalid formula: unsupported operator '") + c + "'");
+                throw std::runtime_error(std::string("Invalid formula: unsupported character '") + token + "'");
         }
     }
     if (st.size() != 1)
         throw std::runtime_error("Invalid formula: incorrect stack size after processing");
+    size_t n;
+    while ((n = st.top().find("!!")) != std::string::npos) {
+        st.top().erase(n, 2);
+    }
     return st.top();
 }

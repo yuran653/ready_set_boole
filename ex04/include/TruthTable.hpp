@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cctype>
-#include <exception>
+#include <stdexcept>
 #include <iostream>
 #include <set>
 #include <stack>
