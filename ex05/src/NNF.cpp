@@ -5,21 +5,32 @@ void apply_binary_operator(std::stack<std::string> &st, const char op) {
         throw std::runtime_error("Invalid formula: not enough operands for binary operator");
     std::string right = st.top(); st.pop();
     std::string left = st.top(); st.pop();
-    st.push(left + right + op);
+    switch (op) {
+        case '&':
+        case '|':
+            st.push(left + right + op);
+            break;
+        case '>':
+            st.push(left + "!" + right + "|");
+            break;
+        case '=':
+            st.push(left + right + "&" + left + "!" + right + "!&|");
+            break;
+    }
 }
 
 void apply_negation(std::stack<std::string> &st) {
-    if (st.empty())
-        throw std::runtime_error("Invalid formula: missing operand for negation");
     std::string top = st.top(); st.pop();
+    
     if (top.back() == '&' || top.back() == '|') {
         char op = top.back();
         std::string right = top.substr(top.size() - 2, 1);
         std::string left = top.substr(0, top.size() - 2);
-        if (op == '&')
+        if (op == '&') {
             st.push(left + "!" + right + "!|");
-        else if (op == '|')
+        } else if (op == '|') {
             st.push(left + "!" + right + "!&");
+        }
     } else {
         st.push(top + "!");
     }
@@ -35,6 +46,8 @@ std::string NNF::toNNF(const std::string &formula) {
                 break;
             case '&':
             case '|':
+            case '>':
+            case '=':
                 apply_binary_operator(st, c);
                 break;
             case '!':

@@ -10,10 +10,10 @@ int main() {
         "A!",       // ¬A -> A!
         "ABC&&!",   // ¬(A ∧ B ∧ C) -> A!B!|C!|
         "AB|C&!",   // ¬((A ∨ B) ∧ C) -> A!B!&C!|
-        "A",        // No operator, so NNF should be A (error)
-        "&",        // Missing operands
-        "AB&&",     // Too many operators
-    "A|B"       // Incorrect operator placement
+        "A",        // A
+        "&",        // Invalid formula: not enough operands for binary operator
+        "AB&&",     // Invalid formula: not enough operands for binary operator
+        "A|B"       // Invalid formula: not enough operands for binary operator
     };
     for (const auto& formula : formulas) {
         try {
