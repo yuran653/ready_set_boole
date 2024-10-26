@@ -25,7 +25,7 @@
 #include "ASTnode.hpp"
 
 int main() {
-    std::string expression = "!a&b";
+    std::string expression = "AB&!";
     std::unique_ptr<ASTnode> root = std::make_unique<ASTnode>(ASTnode::build_ast(expression, expression.size() - 1));
     
     if (root) {

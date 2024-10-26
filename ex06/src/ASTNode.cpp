@@ -1,4 +1,4 @@
-#include "ASTnode.hpp"
+#include "ASTNode.hpp"
 
 ASTnode::ASTnode(const std::string& token,
     std::unique_ptr<ASTnode> left, std::unique_ptr<ASTnode> right) :
