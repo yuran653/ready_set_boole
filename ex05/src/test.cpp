@@ -1,4 +1,5 @@
 #include "NNF.hpp"
+#include <iostream>
 #include <vector>
 
 int main() {

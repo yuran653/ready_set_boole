@@ -1,28 +1,30 @@
 #ifndef AST_HPP
 #define AST_HPP
 
-#include <iostream>
+#include <stdexcept>
 #include <memory>
 #include <string>
 
 class ASTnode {
     private:
-        std::unique_ptr<ASTnode> _left = nullptr;
-        std::unique_ptr<ASTnode> _right = nullptr;
-        std::string _token = "";
+        std::unique_ptr<ASTnode> _left;
+        std::unique_ptr<ASTnode> _right;
+        std::string _token;
 
-        ASTnode() = delete;
+        ASTnode(const ASTnode& other) = delete;
 
-        ASTnode& operator=(const ASTnode& other) = delete;
+        ASTnode& operator=(ASTnode& other) = delete;
+        ASTnode& operator=(ASTnode&& other) = delete;
 
     public:
-        ASTnode(const std::string& token,
-            std::unique_ptr<ASTnode> left, std::unique_ptr<ASTnode> right);
-        ASTnode(const ASTnode& other);
+        ASTnode();
+        ASTnode(ASTnode&& other) noexcept;
         ~ASTnode() = default;
 
         static ASTnode build_ast(const std::string& token, const ssize_t i);
-        void print_ast(int depth) const;
+        const std::unique_ptr<ASTnode>& get_left() const;
+        const std::unique_ptr<ASTnode>& get_right() const;
+        const std::string& get_token() const;
 };
 
 #endif
