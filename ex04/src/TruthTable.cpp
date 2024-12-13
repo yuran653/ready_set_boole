@@ -76,7 +76,7 @@ void TruthTable::truthTable(const std::string& formula) {
 
     std::cout << "| ";
     for (char var : vars)
-        std::cout << std::toupper(var) << " | ";
+        std::cout << std::string(1, std::toupper(var)) << " | ";
     std::cout << "= |" << std::endl;
     for (size_t i = 0; i <= vars.size(); i++)
         std::cout << "|---";
