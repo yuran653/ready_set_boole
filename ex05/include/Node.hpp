@@ -36,4 +36,4 @@ class Node {
         const std::unique_ptr<Node>& get_right() const;
 };
 
-#endif //NODE_HPP
+#endif

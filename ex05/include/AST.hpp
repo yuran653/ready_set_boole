@@ -8,7 +8,7 @@
 class AST {
     private:
         const std::string _formula;
-        const std::unique_ptr<Node> _root;
+        std::unique_ptr<Node> _root;
 
         AST() = delete;
         AST(const AST& other) = delete;
@@ -17,13 +17,13 @@ class AST {
         AST& operator=(AST& other) = delete;
         AST& operator=(AST&& other) = delete;
 
-        const std::unique_ptr<Node> _build_ast(const std::string& formula) const;
+        std::unique_ptr<Node> _build_ast(const std::string& formula);
 
     public:
         explicit AST(const std::string& formula);
         ~AST() = default;
 
-        const Node* get_root() const;
+        const std::unique_ptr<Node>& get_root() const;
 };
 
 #endif
