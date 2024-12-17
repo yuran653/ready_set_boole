@@ -24,6 +24,10 @@ class AST {
         ~AST() = default;
 
         const std::unique_ptr<Node>& get_root() const;
+        bool is_valid() const;
+        void preorder_traversal(const Node* node) const;
+        void print_ast(const Node* node, const std::string& prefix = "") const;
+        std::string is_nnf(const Node* node, std::string tokens = "") const;
 };
 
 #endif
