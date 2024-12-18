@@ -10,7 +10,7 @@ Node::Node(const char& token) :
     // std::cout << "-----------------------------" << std::endl;
 }
 
-Node::Node(const char& token, std::unique_ptr<Node> left) :
+Node::Node(const char& token, std::unique_ptr<Node>&& left) :
     _type(UNARY),
     _token(token),
     _left(std::move(left)),
@@ -23,7 +23,7 @@ Node::Node(const char& token, std::unique_ptr<Node> left) :
         throw std::invalid_argument("Left node cannot be nullptr");
 }
 
-Node::Node(const char& token, std::unique_ptr<Node> left, std::unique_ptr<Node> right) :
+Node::Node(const char& token, std::unique_ptr<Node>&& left, std::unique_ptr<Node>&& right) :
     _type(BINARY),
     _token(token),
     _left(std::move(left)),
@@ -58,4 +58,27 @@ const std::unique_ptr<Node>& Node::get_left() const {
 
 const std::unique_ptr<Node>& Node::get_right() const {
     return _right;
+}
+
+std::unique_ptr<Node>& Node::get_left() {
+    return _left;
+}
+std::unique_ptr<Node>& Node::get_right() {
+    return _right;
+}
+
+void Node::set_type(const NodeType& type) {
+    _type = type;
+}
+
+void Node::set_token(const char& token) {
+    _token = token;
+}
+
+void Node::set_left(std::unique_ptr<Node> left) {
+    _left = std::move(left);
+}
+
+void Node::set_right(std::unique_ptr<Node> right) {
+    _right = std::move(right);
 }
