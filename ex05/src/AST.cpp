@@ -183,7 +183,7 @@ void AST::to_nnf(Node* root) {
                     node->set_right(std::make_unique<Node>('!', std::move(saved_tree->get_right())));
                     break;
                 case '>':
-                    // std::cout << "IF -> stack size: " << stack.size() << std::endl;
+                    // std::cout << "IMPLICATION -> stack size: " << stack.size() << std::endl;
                     node->set_type(BINARY);
                     node->set_token('&');
                     node->set_left(std::move(saved_tree->get_left()));
