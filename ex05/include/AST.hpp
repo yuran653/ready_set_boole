@@ -9,6 +9,7 @@ class AST {
     private:
         const std::string _formula;
         std::unique_ptr<Node> _root;
+        std::string _nnf;
 
         AST() = delete;
         AST(const AST& other) = delete;
@@ -19,17 +20,16 @@ class AST {
 
         const std::string& _remove_redundant_negation_str(std::string& input);
         std::unique_ptr<Node> _build_ast(const std::string& formula);
+        bool _is_nnf(const Node* node) const;
+        const std::string& _to_nnf(Node* root);
 
     public:
         explicit AST(std::string& formula);
         ~AST() = default;
 
-        const std::unique_ptr<Node>& get_root() const;
-        void preorder_traversal_iterative(const Node* root) const;
-        void preorder_traversal(const Node* node) const;
+        // const std::unique_ptr<Node>& get_root() const;
         void print_ast(const Node* node, const std::string& prefix = "") const;
-        bool is_nnf(const Node* node) const;
-        const std::string& to_nnf(Node* root);
+        const std::string& get_nnf() const;
 };
 
 #endif
