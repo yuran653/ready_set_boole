@@ -18,15 +18,18 @@ class Node {
         std::unique_ptr<Node> _right;
 
         Node() = delete;
-        Node(const Node& other) = delete;
 
         Node& operator=(Node& other) = delete;
         Node& operator=(Node&& other) = delete;
 
     public:
         explicit Node(const char& token);
+        // Node.hpp
+        Node(const char& token, const Node& left);
+        Node(const char& token, const Node& left, const Node& right);
         Node(const char& token, std::unique_ptr<Node>&& left);
         Node(const char& token, std::unique_ptr<Node>&& left, std::unique_ptr<Node>&& right);
+        Node(const Node& other);
         Node(Node&& other) noexcept;
         ~Node() = default;
 

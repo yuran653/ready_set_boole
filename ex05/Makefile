@@ -8,7 +8,7 @@ HDR         := $(wildcard $(HDRDIR)/*.hpp)
 INC         := -I./include
 
 CXX         := g++
-CXXFLAGS    := -Wall -Wextra -Werror -std=c++17 #-g
+CXXFLAGS    := -Wall -Wextra -Werror -std=c++17 -g
 
 SRCS        := $(wildcard $(SRCDIR)/*.cpp)
 OBJS        := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))

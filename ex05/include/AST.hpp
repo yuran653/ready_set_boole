@@ -17,19 +17,19 @@ class AST {
         AST& operator=(AST& other) = delete;
         AST& operator=(AST&& other) = delete;
 
-        std::string _remove_redundant_negitiation(const std::string& input);
+        const std::string& _remove_redundant_negation_str(std::string& input);
         std::unique_ptr<Node> _build_ast(const std::string& formula);
 
     public:
-        explicit AST(const std::string& formula);
+        explicit AST(std::string& formula);
         ~AST() = default;
 
         const std::unique_ptr<Node>& get_root() const;
+        void preorder_traversal_iterative(const Node* root) const;
         void preorder_traversal(const Node* node) const;
         void print_ast(const Node* node, const std::string& prefix = "") const;
         bool is_nnf(const Node* node) const;
-        void preorder_traversal_iterative(const Node* root) const;
-        void to_nnf(Node* root);
+        const std::string& to_nnf(Node* root);
 };
 
 #endif
