@@ -24,7 +24,6 @@ class Node {
 
     public:
         explicit Node(const char& token);
-        // Node.hpp
         Node(const char& token, const Node& left);
         Node(const char& token, const Node& left, const Node& right);
         Node(const char& token, std::unique_ptr<Node>&& left);

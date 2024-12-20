@@ -3,10 +3,18 @@
 
 AST::AST(std::string& formula) :
     _formula(_remove_redundant_negation_str(formula)),
-    _root(_build_ast(_remove_redundant_negation_str(formula))) {
+    _root(_build_ast()) {
     if (_root == nullptr)
         throw std::runtime_error("Invalid formula / Unable to build AST");
-    _nnf = _to_nnf(_root.get());
+    // std::cout << "==== Original tree ====" << std::endl;
+    // print_ast(_root.get());
+    // std::cout << "========================" << std::endl;
+    _to_nnf(_root.get());
+    // std::cout << "==== Original tree ====" << std::endl;
+    // print_ast(_root.get());
+    // std::cout << "========================" << std::endl;
+    _nnf_rpn.clear();
+    _to_rpn(_root.get());
 }
 
 const std::string& AST::_remove_redundant_negation_str(std::string& input) {
@@ -18,12 +26,12 @@ const std::string& AST::_remove_redundant_negation_str(std::string& input) {
     return input;
 }
 
-std::unique_ptr<Node> AST::_build_ast(const std::string& formula) {
+std::unique_ptr<Node> AST::_build_ast() {
     try {
         std::stack<std::unique_ptr<Node>> stack;
         std::unique_ptr<Node> tmp_right;
         std::unique_ptr<Node> tmp_left;
-        for (char token : formula) {
+        for (char token : _formula) {
             switch (token) {
                 case 'A' ... 'Z':
                     stack.push(std::make_unique<Node>(token));
@@ -62,10 +70,6 @@ std::unique_ptr<Node> AST::_build_ast(const std::string& formula) {
         return nullptr;
     }
 }
-
-// const std::unique_ptr<Node>& AST::get_root() const {
-//     return _root;
-// }
 
 bool AST::_is_nnf(const Node* node) const {
     if (node == nullptr)
@@ -198,44 +202,32 @@ static void remove_redundant_negation_ast(Node* root) {
     }
 }
 
-static void to_rpn(const Node* root, std::string& result) {
-    if (root == nullptr)
-        return;
-        
-    // For operands, just append the token
+void AST::_to_rpn(const Node* root) {
     if (root->get_type() == OPERAND) {
-        result += root->get_token();
+        _nnf_rpn += root->get_token();
         return;
     }
-    
-    // For unary operators (NOT), traverse left child then append operator
     if (root->get_type() == UNARY) {
-        to_rpn(root->get_left().get(), result);
-        result += root->get_token();
+        _to_rpn(root->get_left().get());
+        _nnf_rpn += root->get_token();
         return;
     }
-    
-    // For binary operators, traverse both children then append operator
     if (root->get_type() == BINARY) {
-        to_rpn(root->get_left().get(), result);
-        to_rpn(root->get_right().get(), result);
-        result += root->get_token();
+        _to_rpn(root->get_left().get());
+        _to_rpn(root->get_right().get());
+        _nnf_rpn += root->get_token();
         return;
     }
 }
 
-const std::string& AST::_to_nnf(Node* root) {
+void AST::_to_nnf(Node* root) {
     if (_is_nnf(root))
-        return _formula;
+        return;
     handle_binary(root);
     handle_unary(root);
     remove_redundant_negation_ast(root);
     if (_is_nnf(root) == false)
         throw std::logic_error("Wrong conversion to NNF");
-    static std::string result;
-    result.clear();
-    to_rpn(root, result);
-    return result;
 }
 
 void AST::print_ast(const Node* node, const std::string& prefix) const {
@@ -255,6 +247,10 @@ void AST::print_ast(const Node* node, const std::string& prefix) const {
     }
 }
 
+const std::string& AST::get_formula() const {
+    return _formula;
+}
+
 const std::string& AST::get_nnf() const {
-    return _nnf;
+    return _nnf_rpn;
 }
