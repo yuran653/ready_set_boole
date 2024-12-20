@@ -2,6 +2,7 @@
 #define CNF_HPP
 
 #include "NNF.hpp"
+#include <iostream> // remove as redundant
 
 class CNF : public NNF {
     private:

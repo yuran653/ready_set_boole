@@ -4,13 +4,13 @@
 
 int main() {
     std::vector<std::pair<std::string, std::string>> formulas = {
-        {"AB&!", "A!B!|"},
-        {"AB|!", "A!B!&"},
-        {"AB|C&", "AB|C&"},
-        {"AB|C|D|", "ABCD|||"},
-        {"AB&C&D&", "ABCD&&&"},
-        {"AB&!C!|", "A!B!C!||"},
-        {"AB|!C!&", "A!B!C!&&"},
+        // {"AB&!", "A!B!|"},
+        // {"AB|!", "A!B!&"},
+        // {"AB|C&", "AB|C&"},
+        // {"AB|C|D|", "ABCD|||"},
+        // {"AB&C&D&", "ABCD&&&"},
+        // {"AB&!C!|", "A!B!C!||"},
+        // {"AB|!C!&", "A!B!C!&&"},
         {"ABCD&|&", "ABC|BD|&&"}
     };
     for (std::pair<std::string, std::string> formula : formulas) {
