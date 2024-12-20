@@ -10,11 +10,11 @@ NNF::NNF(std::string& formula) :
     // print_ast(_root.get());
     // std::cout << "========================" << std::endl;
     _to_nnf(_root.get());
-    // std::cout << "==== Original tree ====" << std::endl;
+    // std::cout << "==== Converted NNF tree ====" << std::endl;
     // print_ast(_root.get());
-    // std::cout << "========================" << std::endl;
+    // std::cout << "============================" << std::endl;
     _nnf_rpn.clear();
-    _to_rpn(_root.get());
+    _to_rpn(_root.get(), _nnf_rpn);
 }
 
 const std::string& NNF::_remove_redundant_negation_str(std::string& input) {
@@ -202,24 +202,6 @@ static void remove_redundant_negation_ast(Node* root) {
     }
 }
 
-void NNF::_to_rpn(const Node* root) {
-    if (root->get_type() == OPERAND) {
-        _nnf_rpn += root->get_token();
-        return;
-    }
-    if (root->get_type() == UNARY) {
-        _to_rpn(root->get_left().get());
-        _nnf_rpn += root->get_token();
-        return;
-    }
-    if (root->get_type() == BINARY) {
-        _to_rpn(root->get_left().get());
-        _to_rpn(root->get_right().get());
-        _nnf_rpn += root->get_token();
-        return;
-    }
-}
-
 void NNF::_to_nnf(Node* root) {
     if (_is_nnf(root))
         return;
@@ -228,6 +210,24 @@ void NNF::_to_nnf(Node* root) {
     remove_redundant_negation_ast(root);
     if (_is_nnf(root) == false)
         throw std::logic_error("Wrong conversion to NNF");
+}
+
+void NNF::_to_rpn(const Node* root, std::string& formula) {
+    if (root->get_type() == OPERAND) {
+        formula += root->get_token();
+        return;
+    }
+    if (root->get_type() == UNARY) {
+        _to_rpn(root->get_left().get(), formula);
+        formula += root->get_token();
+        return;
+    }
+    if (root->get_type() == BINARY) {
+        _to_rpn(root->get_left().get(), formula);
+        _to_rpn(root->get_right().get(), formula);
+        formula += root->get_token();
+        return;
+    }
 }
 
 void NNF::print_ast(const Node* node, const std::string& prefix) const {
