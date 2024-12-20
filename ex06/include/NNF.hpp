@@ -13,7 +13,7 @@ class NNF {
 
         NNF() = delete;
         NNF(const NNF& other) = delete;
-        NNF(const NNF&& other) noexcept;
+        NNF(const NNF&& other) = delete;
 
         NNF& operator=(NNF& other) = delete;
         NNF& operator=(NNF&& other) = delete;
@@ -22,11 +22,11 @@ class NNF {
         std::unique_ptr<Node> _build_ast();
         bool _is_nnf(const Node* node) const;
         void _to_nnf(Node* root);
-        void _to_rpn(const Node* root);
+        void _to_rpn(const Node* root, std::string& formula);
 
     public:
         explicit NNF(std::string& formula);
-        ~NNF() = default;
+        virtual ~NNF() = default;
 
         void print_ast(const Node* node, const std::string& prefix = "") const;
         const std::string& get_formula() const;

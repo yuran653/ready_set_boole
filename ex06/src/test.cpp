@@ -1,4 +1,4 @@
-#include "NNF.hpp"
+#include "CNF.hpp"
 #include <iostream>
 #include <vector>
 
@@ -15,9 +15,9 @@ int main() {
     };
     for (std::pair<std::string, std::string> formula : formulas) {
         try {
-            NNF tree(formula.first);
+            CNF tree(formula.first);
             std::cout << "Formula: " << formula.first << " should be " << formula.second
-                << " is " << tree.get_nnf() << ((tree.get_nnf() == formula.second) ? " : OK" : " : KO") << std::endl;
+                << " is " << tree.get_cnf() << ((tree.get_cnf() == formula.second) ? " : OK" : " : KO") << std::endl;
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
