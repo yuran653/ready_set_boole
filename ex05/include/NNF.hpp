@@ -1,22 +1,22 @@
-#ifndef AST_HPP
-#define AST_HPP
+#ifndef NNF_HPP
+#define NNF_HPP
 
 #include <stack>
 #include <string>
 #include "Node.hpp"
 
-class AST {
+class NNF {
     private:
         const std::string _formula;
         std::unique_ptr<Node> _root;
         std::string _nnf_rpn;
 
-        AST() = delete;
-        AST(const AST& other) = delete;
-        AST(const AST&& other) noexcept;
+        NNF() = delete;
+        NNF(const NNF& other) = delete;
+        NNF(const NNF&& other) noexcept;
 
-        AST& operator=(AST& other) = delete;
-        AST& operator=(AST&& other) = delete;
+        NNF& operator=(NNF& other) = delete;
+        NNF& operator=(NNF&& other) = delete;
 
         const std::string& _remove_redundant_negation_str(std::string& input);
         std::unique_ptr<Node> _build_ast();
@@ -25,8 +25,8 @@ class AST {
         void _to_rpn(const Node* root);
 
     public:
-        explicit AST(std::string& formula);
-        ~AST() = default;
+        explicit NNF(std::string& formula);
+        ~NNF() = default;
 
         void print_ast(const Node* node, const std::string& prefix = "") const;
         const std::string& get_formula() const;

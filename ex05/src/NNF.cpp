@@ -1,7 +1,7 @@
-#include "AST.hpp"
+#include "NNF.hpp"
 #include <iostream>
 
-AST::AST(std::string& formula) :
+NNF::NNF(std::string& formula) :
     _formula(_remove_redundant_negation_str(formula)),
     _root(_build_ast()) {
     if (_root == nullptr)
@@ -17,7 +17,7 @@ AST::AST(std::string& formula) :
     _to_rpn(_root.get());
 }
 
-const std::string& AST::_remove_redundant_negation_str(std::string& input) {
+const std::string& NNF::_remove_redundant_negation_str(std::string& input) {
     size_t position = input.find("!!");
     while (position != std::string::npos) {
         input.erase(position, 2);
@@ -26,7 +26,7 @@ const std::string& AST::_remove_redundant_negation_str(std::string& input) {
     return input;
 }
 
-std::unique_ptr<Node> AST::_build_ast() {
+std::unique_ptr<Node> NNF::_build_ast() {
     try {
         std::stack<std::unique_ptr<Node>> stack;
         std::unique_ptr<Node> tmp_right;
@@ -71,7 +71,7 @@ std::unique_ptr<Node> AST::_build_ast() {
     }
 }
 
-bool AST::_is_nnf(const Node* node) const {
+bool NNF::_is_nnf(const Node* node) const {
     if (node == nullptr)
         return true;
     if (node->get_type() == OPERAND)
@@ -202,7 +202,7 @@ static void remove_redundant_negation_ast(Node* root) {
     }
 }
 
-void AST::_to_rpn(const Node* root) {
+void NNF::_to_rpn(const Node* root) {
     if (root->get_type() == OPERAND) {
         _nnf_rpn += root->get_token();
         return;
@@ -220,7 +220,7 @@ void AST::_to_rpn(const Node* root) {
     }
 }
 
-void AST::_to_nnf(Node* root) {
+void NNF::_to_nnf(Node* root) {
     if (_is_nnf(root))
         return;
     handle_binary(root);
@@ -230,7 +230,7 @@ void AST::_to_nnf(Node* root) {
         throw std::logic_error("Wrong conversion to NNF");
 }
 
-void AST::print_ast(const Node* node, const std::string& prefix) const {
+void NNF::print_ast(const Node* node, const std::string& prefix) const {
     if (node == nullptr)
         return;
     std::cout << prefix << "`-- " << node->get_token() << std::endl;
@@ -247,10 +247,10 @@ void AST::print_ast(const Node* node, const std::string& prefix) const {
     }
 }
 
-const std::string& AST::get_formula() const {
+const std::string& NNF::get_formula() const {
     return _formula;
 }
 
-const std::string& AST::get_nnf() const {
+const std::string& NNF::get_nnf() const {
     return _nnf_rpn;
 }
