@@ -6,14 +6,14 @@
 #include "Node.hpp"
 
 class NNF {
-    private:
+    protected:
         const std::string _formula;
         std::unique_ptr<Node> _root;
         std::string _nnf_rpn;
 
         NNF() = delete;
         NNF(const NNF& other) = delete;
-        NNF(const NNF&& other) = delete;
+        NNF(const NNF&& other) noexcept;
 
         NNF& operator=(NNF& other) = delete;
         NNF& operator=(NNF&& other) = delete;
