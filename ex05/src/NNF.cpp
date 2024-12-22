@@ -216,13 +216,11 @@ void NNF::_to_rpn(const Node* root, std::string& formula) {
     if (root->get_type() == OPERAND) {
         formula += root->get_token();
         return;
-    }
-    if (root->get_type() == UNARY) {
+    } else if (root->get_type() == UNARY) {
         _to_rpn(root->get_left().get(), formula);
         formula += root->get_token();
         return;
-    }
-    if (root->get_type() == BINARY) {
+    } else if (root->get_type() == BINARY) {
         _to_rpn(root->get_left().get(), formula);
         _to_rpn(root->get_right().get(), formula);
         formula += root->get_token();
