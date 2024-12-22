@@ -26,39 +26,26 @@ static bool is_literal(const Node* node) {
 static void parse_tree(const Node* node) {
     if (node == nullptr)
         return;
-    else if (node->get_type() == BINARY) {
+    else if (node->get_token() == '&') {
         if (node->get_left() == nullptr || node->get_right() == nullptr)
             throw std::logic_error("Invalid CNF: case [&]: one of the leaves is \'nullptr\'");
-        else if (node->get_left()->get_token() == '&' && node->get_right()->get_token() == '&')
+        if (node->get_left()->get_token() == '&' && node->get_right()->get_token() == '&')
             ;
-        else if (node->get_token() == '|' && (node->get_left()->get_token() == '&' || node->get_right()->get_token() == '&'))
+        else if ((node->get_left()->get_token() == '&' && is_literal(node->get_right().get())))
+                throw std::logic_error("Invalid CNF: case [&]: node has nested conjunction");
+        else if (node->get_right()->get_token() == '&' && is_literal(node->get_left().get()))
+                ;
+    } else if (node->get_token() == '|') {
+        if (node->get_left() == nullptr || node->get_right() == nullptr)
+            throw std::logic_error("Invalid CNF: case [|]: one of the leaves is \'nullptr\'");
+        if (node->get_left()->get_token() == '&' || node->get_right()->get_token() == '&')
             throw std::logic_error("Invalid CNF: case [|]: one of the leaves is \'&\'");
-        else if (node->get_token() == '|' && (is_literal(node->get_left().get()) == false && is_literal(node->get_right().get()) == false))
-            throw std::logic_error("Invalid CNF: case [|]: one of the leaves is not a literal");
-        else if ((node->get_left()->get_type() == BINARY && is_literal(node->get_right().get())))
-            throw std::logic_error("Invalid CNF: cases [&]/[|]: has nested node");
-        else if (node->get_left()->get_type() == BINARY && is_literal(node->get_left().get()))
+        if (node->get_left()->get_token() == '|' && is_literal(node->get_right().get()))
+            throw std::logic_error("Invalid CNF: case [|]: node has nested disjunction");
+        else if (node->get_right()->get_token() == '|' && is_literal(node->get_left().get()))
             ;
-    // else if (node->get_token() == '&') {
-        // if (node->get_left() == nullptr || node->get_right() == nullptr)
-        //     throw std::logic_error("Invalid CNF: case [&]: one of the leaves is \'nullptr\'");
-        // if (node->get_left()->get_token() == '&' && node->get_right()->get_token() == '&')
-        //     ;
-        // else if ((node->get_left()->get_token() == '&' && is_literal(node->get_right().get())))
-        //         throw std::logic_error("Invalid CNF: case [&]: node has nested conjunction");
-        // else if (node->get_right()->get_token() == '&' && is_literal(node->get_left().get()))
-        //         ;
-    // } else if (node->get_token() == '|') {
-        // if (node->get_left() == nullptr || node->get_right() == nullptr)
-        //     throw std::logic_error("Invalid CNF: case [|]: one of the leaves is \'nullptr\'");
-        // if (node->get_left()->get_token() == '&' || node->get_right()->get_token() == '&')
-        //     throw std::logic_error("Invalid CNF: case [|]: one of the leaves is \'&\'");
-        // if (node->get_left()->get_token() == '|' && is_literal(node->get_right().get()))
-        //     throw std::logic_error("Invalid CNF: case [|]: node has nested disjunction");
-        // else if (node->get_right()->get_token() == '|' && is_literal(node->get_left().get()))
-        //     ;
-        // else if (is_literal(node->get_left().get()) == false && is_literal(node->get_right().get()) == false)
-        //     throw std::logic_error("Invalid CNF: case [|]: one of the leaves is not a literal");
+        else if (is_literal(node->get_left().get()) == false && is_literal(node->get_right().get()) == false)
+            throw std::logic_error("Invalid CNF: case [|]: one of the leaves is not a literal");
     } else if (is_literal(node) == false) {
         throw std::logic_error("Invalid CNF: else case: node is not a literal");
     }
@@ -70,16 +57,6 @@ bool CNF::_is_cnf(const Node* node) const {
     try {
         parse_tree(node);
     } catch (const std::exception& e) {
-        return false;
-    }
-    return true;
-}
-
-bool CNF::_is_cnf_final(const Node* node) const {
-    try {
-        parse_tree(node);
-    } catch (const std::exception& e) {
-        std::cerr << "Error: \'_is_cnf\' false: " << e.what() << std::endl;
         return false;
     }
     return true;
@@ -143,22 +120,23 @@ static void flatten_nested(Node* root) {
         return;
     flatten_nested(root->get_left().get());
     flatten_nested(root->get_right().get());
-    if (root->get_type() == BINARY) {
-        if ((root->get_left()->get_type() == BINARY && is_literal(root->get_right().get()))) {
-            std::unique_ptr<Node> left = std::move(root->get_right());
-            std::unique_ptr<Node> right = std::move(root->get_left());
-            root->set_left(std::move(left));
-            root->set_right(std::move(right));
-        }
+    if (root->get_type() == BINARY && root->get_left()
+        && (root->get_left()->get_type() == BINARY && is_literal(root->get_right().get()))) {
+        std::unique_ptr<Node> left = std::move(root->get_right());
+        std::unique_ptr<Node> right = std::move(root->get_left());
+        root->set_left(std::move(left));
+        root->set_right(std::move(right));
     }
 }
 
 void CNF::_to_cnf(Node* root) {
+    if (_is_cnf(root))
+        return;
+    conjunction_over_disjunction(root);
+    if (_is_cnf(root))
+        return;
+    flatten_nested(root);
     if (_is_cnf(root) == false)
-        conjunction_over_disjunction(root);
-    if (_is_cnf(root) == false)
-        flatten_nested(root);
-    if (_is_cnf_final(root) == false)
         throw std::logic_error("Wrong conversion to CNF: formula \'" + _formula + "\'");
 }
 
