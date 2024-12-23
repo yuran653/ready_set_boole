@@ -15,11 +15,10 @@ NNF::NNF(std::string& formula) :
     _nnf_rpn.clear();
     _to_rpn(_root.get(), _nnf_rpn);
     // std::cout << "==== Converted NNF tree ====" << std::endl;
-    // std::cout << "Formula: " << _formula << std::endl;
+    // std::cout << "Formula: " << _nnf_rpn << std::endl;
     // std::cout << "Tree:" << std::endl;
     // print_ast(_root.get());
     // std::cout << "============================" << std::endl;
-
 }
 
 const std::string& NNF::_remove_redundant_negation_str(std::string& input) {
