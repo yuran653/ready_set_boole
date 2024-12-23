@@ -3,14 +3,18 @@
 CNF::CNF(std::string& formula) :
     NNF(formula) {
     // std::cout << "==== Converted NNF tree ====" << std::endl;
+    //     std::cout << "Formula: " << _nnf_rpn << std::endl;
+    // std::cout << "Tree:" << std::endl;
     // print_ast(_root.get());
     // std::cout << "============================" << std::endl;
     _to_cnf(_root.get());
-    // std::cout << "==== Converted CNF tree ====" << std::endl;
-    // print_ast(_root.get());
-    // std::cout << "============================" << std::endl;
     _cnf_rpn.clear();
     _to_rpn(_root.get(), _cnf_rpn);
+    // std::cout << "==== Converted CNF tree ====" << std::endl;
+    // std::cout << "Formula: " << _cnf_rpn << std::endl;
+    // std::cout << "Tree:" << std::endl;
+    // print_ast(_root.get());
+    // std::cout << "============================" << std::endl;
 }
 
 static bool is_literal(const Node* node) {
