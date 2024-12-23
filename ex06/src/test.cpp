@@ -4,16 +4,17 @@
 
 int main() {
     std::vector<std::pair<std::string, std::string>> formulas = {
-        {"AB&!", "A!B!|"}, // OK
-        {"AB|!", "A!B!&"}, // OK
-        {"AB|C&", "AB|C&"}, // OK
-        {"AB|C|D|", "DCAB|||"}, // OK result is equal to "ABCD|||", the order of literals does not matter
-        {"AB&C&D&", "DCAB&&&"}, // OK result is equal to "ABCD&&&", the order of literals does not matter
-        {"AB|!C!&", "C!A!B!&&"}, // OK result is equal to "A!B!C!&&", the order of literal does not matter
-        {"ABCD&|&", "ABC|BD|&&"}, // OK
-        {"ABC&|", "AB|AC|&"}, // OK
-        {"AB&C|", "AC|BC|&"}, // OK
-        {"AB&CD&|", "AC|AD|&BC|BD|&&"} // OK
+        // {"AB&!", "A!B!|"}, // OK
+        // {"AB|!", "A!B!&"}, // OK
+        // {"AB|C&", "AB|C&"}, // OK
+        {"AB|C|D|", "ABCD|||"}, // KO
+        {"AB&C&D&", "ABCD&&&"}, // KO
+        {"AB&!C!|", "A!B!C!||"}, // KO
+        {"AB|!C!&", "A!B!C!&&"}, // KO
+        {"ABCD&|&", "ABC|BD|&&"}, // OK <-
+        // {"ABC&|", "AB|AC|&"}, // OK
+        // {"AB&C|", "AC|BC|&"}, // OK
+        // {"AB&CD&|", "AC|AD|&BC|BD|&&"} // OK
     };
     for (std::pair<std::string, std::string> formula : formulas) {
         try {

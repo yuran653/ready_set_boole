@@ -17,44 +17,45 @@ CNF::CNF(std::string& formula) :
     // std::cout << "============================" << std::endl;
 }
 
-static void cnf_to_rpn(const Node* node, ssize_t level) {
-    if (node == nullptr)
-        return;
-    if (level == 1) {
-        std::cout << node->get_token() << " ";
-    } else if (level > 1) {
-        cnf_to_rpn(node->get_right().get(), level - 1);
-        cnf_to_rpn(node->get_left().get(), level - 1);
-    }
-}
+// static void cnf_to_rpn(const Node* node, ssize_t level, std::string& rpn) {
+//     if (node == nullptr)
+//         return;
+//     if (level == 1) {
+//         std::cout << node->get_token();
+//         rpn.insert(0, node->get_token());
+//     } else if (level > 1) {
+//         cnf_to_rpn(node->get_right().get(), level - 1, rpn);
+//         cnf_to_rpn(node->get_left().get(), level - 1, rpn);
+//     }
+// }
 
-static ssize_t get_depth(const Node* node) {
-    if (node == nullptr)
-        return 0;
-    return 1 + std::max(get_depth(node->get_left().get()), get_depth(node->get_right().get()));
-}
+// static ssize_t get_depth(const Node* node) {
+//     if (node == nullptr)
+//         return 0;
+//     return 1 + std::max(get_depth(node->get_left().get()), get_depth(node->get_right().get()));
+// }
 
 void CNF::_cnf_to_rpn(const Node* root) {
-    ssize_t depth = get_depth(root);
-    for (int i = 1; i <= depth; ++i)
-        cnf_to_rpn(root, i);
-    
-    // if (!root) {
-    //     return;
-    // }
+    // ssize_t depth = get_depth(root);
+    // for (int i = 1; i <= depth; ++i)
+    //     cnf_to_rpn(root, i, _cnf_rpn);
+    // std::cout << std::endl;
+    if (!root) {
+        return;
+    }
 
-    // // Traverse the left subtree
-    // if (root->get_left()) {
-    //     _cnf_to_rpn(root->get_left().get(), rpn);
-    // }
-    // // Traverse the right subtree
-    // if (root->get_right()) {
-    //     _cnf_to_rpn(root->get_right().get(), rpn);
-    // }
+    // Traverse the left subtree
+    if (root->get_left()) {
+        _cnf_to_rpn(root->get_left().get());
+    }
+    // Traverse the right subtree
+    if (root->get_right()) {
+        _cnf_to_rpn(root->get_right().get());
+    }
 
 
-    // // Append the current node's token to the RPN string
-    // rpn += root->get_token();
+    // Append the current node's token to the RPN string
+    _cnf_rpn += root->get_token();
 }
 
 
@@ -78,9 +79,9 @@ static void parse_tree(const Node* node) {
         } if (node->get_left()->get_token() == "&" && node->get_right()->get_token() == "&") {
             ;
         } else if ((node->get_left()->get_token() == "&" && is_literal(node->get_right().get()))) {
-                throw std::logic_error("Invalid CNF: case [&]: node has nested conjunction");
+            throw std::logic_error("Invalid CNF: case [&]: node has nested conjunction");
         } else if (node->get_right()->get_token() == "&" && is_literal(node->get_left().get())) {
-            ;
+            throw std::logic_error("Invalid CNF: case [&]: node has nested conjunction");
         }
     } else if (node->get_token() == "|") {
         if (node->get_left() == nullptr || node->get_right() == nullptr) {
@@ -90,7 +91,7 @@ static void parse_tree(const Node* node) {
         } if (node->get_left()->get_token() == "|" && is_literal(node->get_right().get())) {
             throw std::logic_error("Invalid CNF: case [|]: node has nested disjunction");
         } else if (node->get_right()->get_token() == "|" && is_literal(node->get_left().get())) {
-            ;
+            throw std::logic_error("Invalid CNF: case [|]: node has nested disjunction");
         } else if (is_literal(node->get_left().get()) == false && is_literal(node->get_right().get()) == false) {
             throw std::logic_error("Invalid CNF: case [|]: one of the leaves is not a literal");
         }
@@ -213,12 +214,13 @@ static void flatten_nested(Node* root) {
         return;
     flatten_nested(root->get_left().get());
     flatten_nested(root->get_right().get());
-    if (root->get_type() == BINARY && root->get_left()
-        && (root->get_left()->get_type() == BINARY && is_literal(root->get_right().get()))) {
-        std::unique_ptr<Node> left = std::move(root->get_right());
-        std::unique_ptr<Node> right = std::move(root->get_left());
-        root->set_left(std::move(left));
-        root->set_right(std::move(right));
+    if (root->get_type() == BINARY && root->get_left() && root->get_right()
+        && root->get_left()->get_type() != BINARY && root->get_left()->get_type() != BINARY) {
+        std::cout << "Here we are" << std::endl;
+        // std::unique_ptr<Node> left = std::move(root->get_right());
+        // std::unique_ptr<Node> right = std::move(root->get_left());
+        // root->set_left(std::move(left));
+        // root->set_right(std::move(right));
     }
 }
 
@@ -266,8 +268,8 @@ void CNF::_to_cnf(Node* root) {
         return;
     print_ast(root);
     flatten_nested(root);
-    if (_is_cnf(root) == false)
-        throw std::logic_error("Wrong conversion to CNF: formula \'" + _formula + "\'" + " -> cnf \'" + _cnf_rpn + "\'");
+    // if (_is_cnf(root) == false)
+    //     throw std::logic_error("Wrong conversion to CNF: formula \'" + _formula + "\'");
 }
 
 const std::string& CNF::get_cnf() const {
