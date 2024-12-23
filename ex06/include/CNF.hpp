@@ -3,6 +3,7 @@
 
 #include "NNF.hpp"
 #include <iostream> // remove as redundant
+#include <queue>
 
 class CNF : public NNF {
     private:
@@ -17,6 +18,7 @@ class CNF : public NNF {
 
         bool _is_cnf(const Node* node) const;
         void _to_cnf(Node* root);
+        void _cnf_to_rpn(const Node* root);
 
     public:
         explicit CNF(std::string& formula);

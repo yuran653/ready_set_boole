@@ -1,6 +1,7 @@
 #ifndef NNF_HPP
 #define NNF_HPP
 
+#include <iostream>
 #include <stack>
 #include <string>
 #include "Node.hpp"
