@@ -1,5 +1,4 @@
 #include "NNF.hpp"
-#include <iostream>
 
 NNF::NNF(std::string& formula) :
     _formula(_remove_redundant_negation_str(formula)),
@@ -35,15 +34,15 @@ static std::unique_ptr<Node> build_ast(const std::string& formula, ssize_t& idx)
         return nullptr;
     char token = formula[idx--];
     if (token >= 'A' && token <= 'Z') {
-        return std::make_unique<Node>(token);
+        return std::make_unique<Node>(std::string(1, token));
     } else if (token == '!') {
         std::unique_ptr<Node> left = build_ast(formula, idx);
-        return std::make_unique<Node>(token, std::move(left));
+        return std::make_unique<Node>(std::string(1, token), std::move(left));
     }
     else if (token == '&' || token == '|' || token == '>' || token == '=' || token == '^') {
         std::unique_ptr<Node> right = build_ast(formula, idx);
         std::unique_ptr<Node> left = build_ast(formula, idx);
-        return std::make_unique<Node>(token, std::move(left), std::move(right));
+        return std::make_unique<Node>(std::string(1, token), std::move(left), std::move(right));
     } else {
         throw std::invalid_argument("Invalid character in formula");
     }
@@ -79,6 +78,12 @@ static void remove_redundant_negation_ast(Node* root) {
                 node->set_right(operand_node->get_right() ? std::make_unique<Node>(*operand_node->get_right()) : nullptr);
             }
         }
+        if (node->get_type() == UNARY) {
+            node->set_type(OPERAND);
+            node->set_token((node->get_left()->get_token() + "!"));
+            node->set_left(nullptr);
+            node->set_right(nullptr);
+        }
         if (node->get_right() != nullptr)
             stack.push(node->get_right().get());
         if (node->get_left() != nullptr)
@@ -97,18 +102,18 @@ static void handle_unary(Node* root) {
         if (node->get_type() == UNARY && node->get_left()->get_type() == BINARY) {
             std::unique_ptr<Node> saved_tree = std::make_unique<Node>(node->get_left()->get_token(),
                 std::move(node->get_left()->get_left()), std::move(node->get_left()->get_right()));
-            switch (node->get_left()->get_token()) {
+            switch (node->get_left()->get_token()[0]) {
                 case '&':
                     node->set_type(BINARY);
-                    node->set_token('|');
-                    node->set_left(std::make_unique<Node>('!', std::move(saved_tree->get_left())));
-                    node->set_right(std::make_unique<Node>('!', std::move(saved_tree->get_right())));
+                    node->set_token("|");
+                    node->set_left(std::make_unique<Node>("!", std::move(saved_tree->get_left())));
+                    node->set_right(std::make_unique<Node>("!", std::move(saved_tree->get_right())));
                     break;
                 case '|':
                     node->set_type(BINARY);
-                    node->set_token('&');
-                    node->set_left(std::make_unique<Node>('!', std::move(saved_tree->get_left())));
-                    node->set_right(std::make_unique<Node>('!', std::move(saved_tree->get_right())));
+                    node->set_token("&");
+                    node->set_left(std::make_unique<Node>("!", std::move(saved_tree->get_left())));
+                    node->set_right(std::make_unique<Node>("!", std::move(saved_tree->get_right())));
                     break;
                 default:
                     throw std::runtime_error("Invalid binary token");
@@ -130,35 +135,35 @@ static void handle_binary(Node* root) {
         Node* node = stack.top();
         stack.pop();
         if (node->get_type() == BINARY &&
-            (node->get_token() == '>' || node->get_token() == '=' || node->get_token() == '^')) {
+            (node->get_token() == ">" || node->get_token() == "=" || node->get_token() == "^")) {
             std::unique_ptr<Node> saved_tree = std::make_unique<Node>(node->get_left()->get_token(),
                 std::move(node->get_left()), std::move(node->get_right()));
-            switch (node->get_token()) {
+            switch (node->get_token()[0]) {
                 case '>':
                     node->set_type(BINARY);
-                    node->set_token('|');
-                    node->set_left(std::make_unique<Node>('!', std::move(*saved_tree->get_left())));
+                    node->set_token("|");
+                    node->set_left(std::make_unique<Node>("!", std::move(*saved_tree->get_left())));
                     node->set_right(std::make_unique<Node>(std::move(*saved_tree->get_right())));
                     break;
                 case '=':
                     node->set_type(BINARY);
-                    node->set_token('|');
-                    node->set_left(std::make_unique<Node>('&',
+                    node->set_token("|");
+                    node->set_left(std::make_unique<Node>("&",
                         std::make_unique<Node>(*saved_tree->get_left()),
                         std::make_unique<Node>(*saved_tree->get_right())));
-                    node->set_right(std::make_unique<Node>('&',
-                        std::make_unique<Node>('!', *saved_tree->get_left()),
-                        std::make_unique<Node>('!', *saved_tree->get_right())));
+                    node->set_right(std::make_unique<Node>("&",
+                        std::make_unique<Node>("!", *saved_tree->get_left()),
+                        std::make_unique<Node>("!", *saved_tree->get_right())));
                     saved_tree.reset();
                     break;
                 case '^':
                     node->set_type(BINARY);
-                    node->set_token('|');
-                    node->set_left(std::make_unique<Node>('&',
+                    node->set_token("|");
+                    node->set_left(std::make_unique<Node>("&",
                         std::make_unique<Node>(*saved_tree->get_left()),
-                        std::make_unique<Node>('!',*saved_tree->get_right())));
-                    node->set_right(std::make_unique<Node>('&',
-                        std::make_unique<Node>('!', *saved_tree->get_left()),
+                        std::make_unique<Node>("!",*saved_tree->get_right())));
+                    node->set_right(std::make_unique<Node>("&",
+                        std::make_unique<Node>("!", *saved_tree->get_left()),
                         std::make_unique<Node>(*saved_tree->get_right())));
                     saved_tree.reset();
                     break;
@@ -179,7 +184,7 @@ bool NNF::_is_nnf(const Node* node) const {
     if (node->get_type() == OPERAND)
         return true;
     if (node->get_type() == UNARY) {
-        if (node->get_token() == '!') {
+        if (node->get_token() == "!") {
             if (node->get_left().get() && node->get_left().get()->get_type() == OPERAND)
                 return true;
             else
@@ -187,7 +192,7 @@ bool NNF::_is_nnf(const Node* node) const {
         }
     }
     if (node->get_type() == BINARY) {
-        if (node->get_token() == '&' || node->get_token() == '|')
+        if (node->get_token() == "&" || node->get_token() == "|")
             return _is_nnf(node->get_left().get()) && _is_nnf(node->get_right().get());
     }
     return false;

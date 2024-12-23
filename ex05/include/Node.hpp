@@ -13,7 +13,7 @@ enum NodeType {
 class Node {
     private:
         NodeType _type;
-        char _token;
+        std::string _token;
         std::unique_ptr<Node> _left;
         std::unique_ptr<Node> _right;
 
@@ -23,23 +23,23 @@ class Node {
         Node& operator=(Node&& other) = delete;
 
     public:
-        explicit Node(const char& token);
-        Node(const char& token, const Node& left);
-        Node(const char& token, const Node& left, const Node& right);
-        Node(const char& token, std::unique_ptr<Node>&& left);
-        Node(const char& token, std::unique_ptr<Node>&& left, std::unique_ptr<Node>&& right);
+        explicit Node(const std::string& token);
+        Node(const std::string& token, const Node& left);
+        Node(const std::string& token, const Node& left, const Node& right);
+        Node(const std::string& token, std::unique_ptr<Node>&& left);
+        Node(const std::string& token, std::unique_ptr<Node>&& left, std::unique_ptr<Node>&& right);
         Node(const Node& other);
         Node(Node&& other) noexcept;
         ~Node() = default;
 
         const NodeType& get_type() const;
-        const char& get_token() const;
+        const std::string& get_token() const;
         const std::unique_ptr<Node>& get_left() const;
         const std::unique_ptr<Node>& get_right() const;
         std::unique_ptr<Node>& get_left();
         std::unique_ptr<Node>& get_right();
         void set_type(const NodeType& type);
-        void set_token(const char& token);
+        void set_token(const std::string& token);
         void set_left(std::unique_ptr<Node> left);
         void set_right(std::unique_ptr<Node> right);
 };
