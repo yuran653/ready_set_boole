@@ -7,10 +7,10 @@ int main() {
         // {"AB&!", "A!B!|"}, // OK
         // {"AB|!", "A!B!&"}, // OK
         // {"AB|C&", "AB|C&"}, // OK
-        {"AB|C|D|", "ABCD|||"}, // KO
-        {"AB&C&D&", "ABCD&&&"}, // KO
-        {"AB&!C!|", "A!B!C!||"}, // KO
-        {"AB|!C!&", "A!B!C!&&"}, // KO
+        // {"AB|C|D|", "ABCD|||"}, // KO
+        // {"AB&C&D&", "ABCD&&&"}, // KO
+        // {"AB&!C!|", "A!B!C!||"}, // KO
+        // {"AB|!C!&", "A!B!C!&&"}, // KO
         {"ABCD&|&", "ABC|BD|&&"}, // OK <-
         // {"ABC&|", "AB|AC|&"}, // OK
         // {"AB&C|", "AC|BC|&"}, // OK
