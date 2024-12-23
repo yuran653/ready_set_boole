@@ -51,8 +51,8 @@ Node::Node(const Node& other) :
 }
 
 Node::Node(Node&& other) noexcept :
-    _type(std::move(other._type)),
-    _token(std::move(other._token)),
+    _type(other._type),
+    _token(other._token),
     _left(std::move(other._left)),
     _right(std::move(other._right)) {
 }

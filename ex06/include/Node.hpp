@@ -2,6 +2,7 @@
 #define NODE_HPP
 
 #include <stdexcept>
+#include <string>
 #include <memory>
 
 enum NodeType {

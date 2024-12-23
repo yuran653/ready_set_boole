@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <stack>
-#include <string>
 #include "Node.hpp"
 
 class NNF {
