@@ -61,153 +61,6 @@ std::unique_ptr<Node> NNF::_build_ast() {
     return root;
 }
 
-static void remove_redundant_negation_ast(Node* root) {
-    if (root == nullptr)
-        return;
-    std::stack<Node*> stack;
-    stack.push(root);
-    while (!stack.empty()) {
-        Node* node = stack.top();
-        stack.pop();
-        if (node->get_type() == UNARY && node->get_left() && node->get_left()->get_type() == UNARY) {
-            if (node->get_left()->get_left() != nullptr) {
-                std::unique_ptr<Node> operand_node = std::move(node->get_left()->get_left());
-                node->set_type(operand_node->get_type());
-                node->set_token(operand_node->get_token());
-                node->set_left(operand_node->get_left() ? std::make_unique<Node>(*operand_node->get_left()) : nullptr);
-                node->set_right(operand_node->get_right() ? std::make_unique<Node>(*operand_node->get_right()) : nullptr);
-            }
-        }
-        if (node->get_type() == UNARY) {
-            node->set_type(OPERAND);
-            node->set_token((node->get_left()->get_token() + "!"));
-            node->set_left(nullptr);
-            node->set_right(nullptr);
-        }
-        if (node->get_right() != nullptr)
-            stack.push(node->get_right().get());
-        if (node->get_left() != nullptr)
-            stack.push(node->get_left().get());
-    }
-}
-
-static void handle_unary(Node* root) {
-    if (root == nullptr)
-        return;
-    std::stack<Node*> stack;
-    stack.push(root);
-    while (!stack.empty()) {
-        Node* node = stack.top();
-        stack.pop();
-        if (node->get_type() == UNARY && node->get_left()->get_type() == BINARY) {
-            std::unique_ptr<Node> saved_tree = std::make_unique<Node>(node->get_left()->get_token(),
-                std::move(node->get_left()->get_left()), std::move(node->get_left()->get_right()));
-            switch (node->get_left()->get_token()[0]) {
-                case '&':
-                    node->set_type(BINARY);
-                    node->set_token("|");
-                    node->set_left(std::make_unique<Node>("!", std::move(saved_tree->get_left())));
-                    node->set_right(std::make_unique<Node>("!", std::move(saved_tree->get_right())));
-                    break;
-                case '|':
-                    node->set_type(BINARY);
-                    node->set_token("&");
-                    node->set_left(std::make_unique<Node>("!", std::move(saved_tree->get_left())));
-                    node->set_right(std::make_unique<Node>("!", std::move(saved_tree->get_right())));
-                    break;
-                default:
-                    throw std::runtime_error("Invalid binary token");
-            }
-        }
-        if (node->get_right() != nullptr)
-            stack.push(node->get_right().get());
-        if (node->get_left() != nullptr)
-            stack.push(node->get_left().get());
-    }
-}
-
-static void handle_binary(Node* root) {
-    if (root == nullptr)
-        return;
-    std::stack<Node*> stack;
-    stack.push(root);
-    while (!stack.empty()) {
-        Node* node = stack.top();
-        stack.pop();
-        if (node->get_type() == BINARY &&
-            (node->get_token() == ">" || node->get_token() == "=" || node->get_token() == "^")) {
-            std::unique_ptr<Node> saved_tree = std::make_unique<Node>(node->get_left()->get_token(),
-                std::move(node->get_left()), std::move(node->get_right()));
-            switch (node->get_token()[0]) {
-                case '>':
-                    node->set_type(BINARY);
-                    node->set_token("|");
-                    node->set_left(std::make_unique<Node>("!", std::move(*saved_tree->get_left())));
-                    node->set_right(std::make_unique<Node>(std::move(*saved_tree->get_right())));
-                    break;
-                case '=':
-                    node->set_type(BINARY);
-                    node->set_token("|");
-                    node->set_left(std::make_unique<Node>("&",
-                        std::make_unique<Node>(*saved_tree->get_left()),
-                        std::make_unique<Node>(*saved_tree->get_right())));
-                    node->set_right(std::make_unique<Node>("&",
-                        std::make_unique<Node>("!", *saved_tree->get_left()),
-                        std::make_unique<Node>("!", *saved_tree->get_right())));
-                    saved_tree.reset();
-                    break;
-                case '^':
-                    node->set_type(BINARY);
-                    node->set_token("|");
-                    node->set_left(std::make_unique<Node>("&",
-                        std::make_unique<Node>(*saved_tree->get_left()),
-                        std::make_unique<Node>("!",*saved_tree->get_right())));
-                    node->set_right(std::make_unique<Node>("&",
-                        std::make_unique<Node>("!", *saved_tree->get_left()),
-                        std::make_unique<Node>(*saved_tree->get_right())));
-                    saved_tree.reset();
-                    break;
-                default:
-                    throw std::runtime_error("Invalid binary token");
-            }
-        }
-        if (node->get_right() != nullptr)
-            stack.push(node->get_right().get());
-        if (node->get_left() != nullptr)
-            stack.push(node->get_left().get());
-    }
-}
-
-bool NNF::_is_nnf(const Node* node) const {
-    if (node == nullptr)
-        return true;
-    if (node->get_type() == OPERAND)
-        return true;
-    if (node->get_type() == UNARY) {
-        if (node->get_token() == "!") {
-            if (node->get_left().get() && node->get_left().get()->get_type() == OPERAND)
-                return true;
-            else
-                return false;
-        }
-    }
-    if (node->get_type() == BINARY) {
-        if (node->get_token() == "&" || node->get_token() == "|")
-            return _is_nnf(node->get_left().get()) && _is_nnf(node->get_right().get());
-    }
-    return false;
-}
-
-void NNF::_to_nnf(Node* root) {
-    if (_is_nnf(root))
-        return;
-    handle_binary(root);
-    handle_unary(root);
-    remove_redundant_negation_ast(root);
-    if (_is_nnf(root) == false)
-        throw std::logic_error("Wrong conversion to NNF");
-}
-
 void NNF::_to_rpn(const Node* root, std::string& formula) {
     if (root->get_type() == OPERAND) {
         formula += root->get_token();
@@ -224,6 +77,125 @@ void NNF::_to_rpn(const Node* root, std::string& formula) {
     }
 }
 
+static void handle_negation(Node* node) {
+    if (node == nullptr)
+        return;
+    if (node->get_type() == UNARY && node->get_left() && node->get_left()->get_type() == UNARY) {
+        if (node->get_left()->get_left() != nullptr) {
+            std::unique_ptr<Node> operand_node = std::move(node->get_left()->get_left());
+            node->set_type(operand_node->get_type());
+            node->set_token(operand_node->get_token());
+            node->set_left(operand_node->get_left() ? std::make_unique<Node>(*operand_node->get_left()) : nullptr);
+            node->set_right(operand_node->get_right() ? std::make_unique<Node>(*operand_node->get_right()) : nullptr);
+        }
+    }
+    if (node->get_type() == UNARY) {
+        node->set_type(OPERAND);
+        node->set_token((node->get_left()->get_token() + "!"));
+        node->set_left(nullptr);
+        node->set_right(nullptr);
+    }
+    handle_negation(node->get_right().get());
+    handle_negation(node->get_left().get());
+}
+
+static void handle_unary(Node* node) {
+    if (node == nullptr)
+        return;
+    if (node->get_type() == UNARY && node->get_left()->get_type() == BINARY) {
+        std::unique_ptr<Node> saved_tree = std::make_unique<Node>(node->get_left()->get_token(),
+            std::move(node->get_left()->get_left()), std::move(node->get_left()->get_right()));
+        switch (node->get_left()->get_token()[0]) {
+            case '&':
+                node->set_type(BINARY);
+                node->set_token("|");
+                node->set_left(std::make_unique<Node>("!", std::move(saved_tree->get_left())));
+                node->set_right(std::make_unique<Node>("!", std::move(saved_tree->get_right())));
+                break;
+            case '|':
+                node->set_type(BINARY);
+                node->set_token("&");
+                node->set_left(std::make_unique<Node>("!", std::move(saved_tree->get_left())));
+                node->set_right(std::make_unique<Node>("!", std::move(saved_tree->get_right())));
+                break;
+            default:
+                throw std::runtime_error("Handle unary: Invalid binary token");
+        }
+    }
+    handle_unary(node->get_right().get());
+    handle_unary(node->get_left().get());
+}
+
+static void handle_binary(Node* node) {
+    if (node == nullptr)
+        return;
+    if (node->get_type() == BINARY
+        && (node->get_token() == ">" || node->get_token() == "=" || node->get_token() == "^")) {
+        if (node->get_right() == nullptr || node->get_left() == nullptr)
+            throw std::runtime_error("Invalid binary token: absense right and/or left node");
+        std::unique_ptr<Node> saved_tree = std::make_unique<Node>(node->get_left()->get_token(),
+            std::move(node->get_left()), std::move(node->get_right()));
+        switch (node->get_token()[0]) {
+            case '>':
+                node->set_type(BINARY);
+                node->set_token("|");
+                node->set_left(std::make_unique<Node>("!", std::move(*saved_tree->get_left())));
+                node->set_right(std::make_unique<Node>(std::move(*saved_tree->get_right())));
+                break;
+            case '=':
+                node->set_type(BINARY);
+                node->set_token("|");
+                node->set_left(std::make_unique<Node>("&",
+                    std::make_unique<Node>(*saved_tree->get_left()),
+                    std::make_unique<Node>(*saved_tree->get_right())));
+                node->set_right(std::make_unique<Node>("&",
+                    std::make_unique<Node>("!", *saved_tree->get_left()),
+                    std::make_unique<Node>("!", *saved_tree->get_right())));
+                saved_tree.reset();
+                break;
+            case '^':
+                node->set_type(BINARY);
+                node->set_token("|");
+                node->set_left(std::make_unique<Node>("&",
+                    std::make_unique<Node>(*saved_tree->get_left()),
+                    std::make_unique<Node>("!",*saved_tree->get_right())));
+                node->set_right(std::make_unique<Node>("&",
+                    std::make_unique<Node>("!", *saved_tree->get_left()),
+                    std::make_unique<Node>(*saved_tree->get_right())));
+                saved_tree.reset();
+                break;              
+        }
+    }
+    handle_binary(node->get_right().get());
+    handle_binary(node->get_left().get());
+}
+
+bool NNF::_is_nnf(const Node* node) const {
+    if (node == nullptr) {
+        return true;
+    } else if (node->get_type() == OPERAND) {
+        return true;
+    } else if (node->get_type() == UNARY) {
+        return false;
+    } else if (node->get_type() == BINARY) {
+        if (node->get_token() == "&" || node->get_token() == "|")
+            return _is_nnf(node->get_left().get()) && _is_nnf(node->get_right().get());
+        else
+            return false;
+    }
+    return false;
+}
+
+void NNF::_to_nnf(Node* root) {
+    if (_is_nnf(root))
+        return;
+    handle_binary(root);
+    handle_unary(root);
+    handle_negation(root);
+    if (_is_nnf(root) == false)
+        throw std::logic_error("Wrong conversion to NNF");
+}
+
 void NNF::print_ast(const Node* node, const std::string& prefix) const {
     if (node == nullptr)
         return;
@@ -233,8 +205,8 @@ void NNF::print_ast(const Node* node, const std::string& prefix) const {
             print_ast(node->get_left().get(), prefix + "    ");
             break;
         case BINARY:
-            print_ast(node->get_left().get(), prefix + "    ");
             print_ast(node->get_right().get(), prefix + "    ");
+            print_ast(node->get_left().get(), prefix + "    ");
             break;
         default:
             break;
