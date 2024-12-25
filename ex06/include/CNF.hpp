@@ -16,10 +16,7 @@ class CNF : public NNF {
         CNF& operator=(CNF& other) = delete;
         CNF& operator=(CNF&& other) = delete;
 
-        // bool _is_cnf(const Node* node) const;
-        // bool _is_cnf(const Node* node) const;
         void _to_cnf(Node* root);
-        // void _cnf_to_rpn(const Node* root);
 
     public:
         explicit CNF(std::string& formula);

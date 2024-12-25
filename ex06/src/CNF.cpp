@@ -40,15 +40,19 @@ static void conjunction_over_disjunction(Node* node) {
     if (node == nullptr || node->get_type() == OPERAND)
         return;
     conjunction_over_disjunction(node->get_left().get());
-    std::cout << "Token: [" << node->get_token() << "]";
-    if (node->get_right())
-        std::cout << " Right: [" << node->get_right()->get_token() << "]";
-    if (node->get_left())
-        std::cout << " Left: [" << node->get_left()->get_token() << "]";
-    std::cout << std::endl;
     if (node->get_token() == "|") {
         if (node->get_right()->get_token() == "&" && node->get_left()->get_token() == "&") {
-            std::cout << "^^^ both COD ^^^" << std::endl;
+            std::unique_ptr<Node> a = std::move(node->get_left()->get_left());
+            std::unique_ptr<Node> b = std::move(node->get_left()->get_right());
+            std::unique_ptr<Node> c = std::move(node->get_right()->get_left());
+            std::unique_ptr<Node> d = std::move(node->get_right()->get_right());
+            node->set_token("&");
+            node->set_left(std::make_unique<Node>( "&",
+                std::make_unique<Node>("|", std::make_unique<Node>(a->get_token()), std::make_unique<Node>(c->get_token())), 
+                std::make_unique<Node>("|", std::make_unique<Node>(a->get_token()), std::make_unique<Node>(d->get_token()))));
+            node->set_right(std::make_unique<Node>("&",
+                std::make_unique<Node>("|", std::make_unique<Node>(b->get_token()), std::make_unique<Node>(c->get_token())), 
+                std::make_unique<Node>("|", std::make_unique<Node>(b->get_token()), std::make_unique<Node>(d->get_token()))));
         } else if (node->get_right()->get_token() == "&") {
             std::unique_ptr<Node> right_right = std::make_unique<Node>(*node->get_right()->get_right());
             std::unique_ptr<Node> left_right = std::make_unique<Node>(*node->get_right()->get_left());
@@ -73,17 +77,8 @@ static void conjunction_over_disjunction(Node* node) {
 }
 
 void CNF::_to_cnf(Node* root) {
-    // if (_is_cnf(root)) {
-    //     std::cout << "---> no conversion <---" << std::endl;
-    //     print_ast(root);
-    //     return;
-    // }
     conjunction_over_disjunction(root);
-    print_ast(root);
     flatten_nested(root);
-    // if (_is_cnf(root) == false)
-    //     throw std::logic_error("Wrong conversion to CNF: formula \'" + _formula + "\'");
-    // std::cout << "!!!!! KO !!!!!!" << std::endl;
 }
 
 const std::string& CNF::get_cnf() const {
