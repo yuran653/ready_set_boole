@@ -17,46 +17,73 @@ CNF::CNF(std::string& formula) :
     // std::cout << "============================" << std::endl;
 }
 
-bool CNF::_is_cnf(const Node* node) const {
-    if (node == nullptr) {
-        return true;
-    } else if (node->get_type() == OPERAND) {
-        return true;
-    } else if (node->get_type() == BINARY) {
-        if (node->get_right() == nullptr || node->get_left() == nullptr) {
-            return false;
-        } else if (node->get_right()->get_type() == OPERAND && node->get_left()->get_type() == OPERAND) {
-            return true;
-        } else if (node->get_token() == "|") {
-            if (node->get_right()->get_token() == "&" || node->get_left()->get_token() == "&")
-                return false;
-            else
-                return _is_cnf(node->get_right().get()) && _is_cnf(node->get_left().get());
-        } else if (node->get_right()->get_type() == BINARY && node->get_left()->get_type() == BINARY
-            && node->get_right()->get_token() == node->get_left()->get_token()) {
-            return true;
-        } else if (node->get_token() == "&") {
-            if (node->get_right()->get_token() == "|" || node->get_left()->get_token() == "|")
-                return _is_cnf(node->get_right().get()) && _is_cnf(node->get_left().get());
-            else
-                return false;
-        } else {
-            return false;
+static void flatten_nested(Node* node) {
+    if (node == nullptr || node->get_type() == OPERAND)
+        return;
+    flatten_nested(node->get_left().get());
+    if (node->get_type() == BINARY && (node->get_left()->get_token() == node->get_token()
+            || (node->get_right()->get_token() == node->get_token()
+                && node->get_left()->get_token() == node->get_token()))) {
+        std::unique_ptr<Node> new_right = std::make_unique<Node>(
+            node->get_left()->get_token(),
+            std::move(node->get_left()->get_right()),
+            std::move(node->get_right())
+        );
+        std::unique_ptr<Node> new_left(std::move(node->get_left()->get_left()));
+        node->set_right(std::move(new_right));
+        node->set_left(std::move(new_left));
+    }
+    flatten_nested(node->get_right().get());
+}
+
+static void conjunction_over_disjunction(Node* node) {
+    if (node == nullptr || node->get_type() == OPERAND)
+        return;
+    conjunction_over_disjunction(node->get_left().get());
+    std::cout << "Token: [" << node->get_token() << "]";
+    if (node->get_right())
+        std::cout << " Right: [" << node->get_right()->get_token() << "]";
+    if (node->get_left())
+        std::cout << " Left: [" << node->get_left()->get_token() << "]";
+    std::cout << std::endl;
+    if (node->get_token() == "|") {
+        if (node->get_right()->get_token() == "&" && node->get_left()->get_token() == "&") {
+            std::cout << "^^^ both COD ^^^" << std::endl;
+        } else if (node->get_right()->get_token() == "&") {
+            std::unique_ptr<Node> right_right = std::make_unique<Node>(*node->get_right()->get_right());
+            std::unique_ptr<Node> left_right = std::make_unique<Node>(*node->get_right()->get_left());
+            std::unique_ptr<Node> right_left = std::make_unique<Node>(node->get_left()->get_token());
+            std::unique_ptr<Node> left_left = std::make_unique<Node>(node->get_left()->get_token());
+            node->set_token("&");
+            node->set_right(std::make_unique<Node>("|", std::move(right_left), std::move(right_right)));
+            node->set_left(std::make_unique<Node>("|", std::move(left_left), std::move(left_right)));
+            conjunction_over_disjunction(node->get_left().get());
+        } else if (node->get_left()->get_token() == "&") { 
+            std::unique_ptr<Node> right_right = std::make_unique<Node>(node->get_right()->get_token());
+            std::unique_ptr<Node> left_right = std::make_unique<Node>(node->get_right()->get_token());
+            std::unique_ptr<Node> right_left = std::make_unique<Node>(*node->get_left()->get_right());
+            std::unique_ptr<Node> left_left = std::make_unique<Node>(*node->get_left()->get_left());
+            node->set_token("&");
+            node->set_right(std::make_unique<Node>("|", std::move(right_left), std::move(right_right)));
+            node->set_left(std::make_unique<Node>("|", std::move(left_left), std::move(left_right)));
+            conjunction_over_disjunction(node->get_right().get());
         }
     }
-    return false;
+    conjunction_over_disjunction(node->get_right().get());
 }
 
 void CNF::_to_cnf(Node* root) {
-    if (_is_cnf(root)) {
-        std::cout << "---> no conversion <---" << std::endl;
-        print_ast(root);
-        return;
-    }
-    // print_ast(root);
+    // if (_is_cnf(root)) {
+    //     std::cout << "---> no conversion <---" << std::endl;
+    //     print_ast(root);
+    //     return;
+    // }
+    conjunction_over_disjunction(root);
+    print_ast(root);
+    flatten_nested(root);
     // if (_is_cnf(root) == false)
     //     throw std::logic_error("Wrong conversion to CNF: formula \'" + _formula + "\'");
-    std::cout << "!!!!! KO !!!!!!" << std::endl;
+    // std::cout << "!!!!! KO !!!!!!" << std::endl;
 }
 
 const std::string& CNF::get_cnf() const {
