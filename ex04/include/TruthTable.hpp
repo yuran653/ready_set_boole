@@ -17,7 +17,7 @@ class TruthTable {
         ~TruthTable() = delete;
 
     public:
-        static void truthTable(const std::string& formula);
+        static std::pair<std::string, std::vector<bool>> truth_table(const std::string& formula);
 };
 
 #endif
