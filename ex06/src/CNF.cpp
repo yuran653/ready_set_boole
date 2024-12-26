@@ -76,9 +76,38 @@ static void conjunction_over_disjunction(Node* node) {
     conjunction_over_disjunction(node->get_right().get());
 }
 
+static void is_cnf(const Node* node) {
+    if (node == nullptr || node->get_type() == OPERAND)
+        return;
+    is_cnf(node->get_left().get());
+    if (node->get_type() == BINARY && (node->get_left()->get_token() == node->get_token()
+            || (node->get_right()->get_token() == node->get_token()
+                && node->get_left()->get_token() == node->get_token()))) {
+        throw std::runtime_error("Error: is_cnf false: nested");
+    } if (node->get_token() == "|") {
+        if (node->get_right()->get_token() == "&" || node->get_left()->get_token() == "&") {
+            throw std::runtime_error("Error: is_cnf false: disjunction over conjunction");
+        }
+    }
+    is_cnf(node->get_right().get());
+}
+
+bool CNF::_is_cnf(const Node* root) const {
+    try {
+        is_cnf(root);
+    } catch (const std::exception& e) {
+        return false;
+    }
+    return true;
+}
+
 void CNF::_to_cnf(Node* root) {
+    if (_is_cnf(root))
+        return;
     conjunction_over_disjunction(root);
     flatten_nested(root);
+    if (_is_cnf(root) == false)
+        throw std::runtime_error("Wrong conversion to CNF");
 }
 
 const std::string& CNF::get_cnf() const {

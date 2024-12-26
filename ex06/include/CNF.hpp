@@ -16,6 +16,7 @@ class CNF : public NNF {
         CNF& operator=(CNF& other) = delete;
         CNF& operator=(CNF&& other) = delete;
 
+        bool _is_cnf(const Node* root) const;
         void _to_cnf(Node* root);
 
     public:
