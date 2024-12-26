@@ -22,7 +22,7 @@ NNF::NNF(std::string& formula) :
 
 const std::string& NNF::_remove_redundant_negation_str(std::string& input) {
     size_t position = input.find("!!");
-    while (position != std::string::npos) {
+    while (position != std::string::npos && position != 0) {
         input.erase(position, 2);
         position = input.find("!!");
     }
@@ -54,6 +54,8 @@ std::unique_ptr<Node> NNF::_build_ast() {
     std::unique_ptr<Node> root(nullptr);
     try {
         root = build_ast(_formula, idx);
+        if (idx != -1)
+            throw std::invalid_argument("Incorrect formula");
     } catch (const std::exception& e) {
         std::cerr << "Error: build_ast: " << e.what() << std::endl;
         return nullptr;
@@ -63,10 +65,6 @@ std::unique_ptr<Node> NNF::_build_ast() {
 
 void NNF::_to_rpn(const Node* root, std::string& formula) {
     if (root->get_type() == OPERAND) {
-        formula += root->get_token();
-        return;
-    } else if (root->get_type() == UNARY) {
-        _to_rpn(root->get_left().get(), formula);
         formula += root->get_token();
         return;
     } else if (root->get_type() == BINARY) {
