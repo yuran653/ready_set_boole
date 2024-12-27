@@ -2,13 +2,13 @@
 #define POWERSET_HPP
 
 #include <iostream>
-#include <vector>
 #include <set>
 
 class PowerSet {
     private:
         const std::set<int32_t> _original_set;
-        std::vector<std::vector<int32_t>> _powerset;
+        const int32_t _subsets_amount;
+        std::set<std::set<int32_t>> _powerset;
 
         PowerSet() = delete;
         PowerSet(const PowerSet& other) = delete;
@@ -17,7 +17,6 @@ class PowerSet {
         PowerSet& operator=(const PowerSet& other) = delete;
 
         void _create_powerset();
-        template <typename T>
         void _print_set(const std::set<int32_t>& set) const;
 
     public:
@@ -27,7 +26,7 @@ class PowerSet {
         void print_original_set() const;
         void print_powerset() const;
         const std::set<int32_t> get_original_set() const;
-        const std::vector<std::vector<int32_t>> get_powerset() const;
+        const std::set<std::set<int32_t>> get_powerset() const;
 };
 
 #endif
