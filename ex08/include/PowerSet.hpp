@@ -20,7 +20,7 @@ class PowerSet {
         void _print_set(const std::set<int32_t>& set) const;
 
     public:
-        PowerSet(const std::set<int32_t>& set);
+        explicit PowerSet(const std::set<int32_t>& set);
         ~PowerSet() = default;
 
         void print_original_set() const;
