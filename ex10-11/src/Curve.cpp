@@ -1,5 +1,4 @@
 #include "Curve.hpp"
-#include <iostream>
 
 double Curve::map(uint16_t x, uint16_t y) {
     uint32_t result = 0;

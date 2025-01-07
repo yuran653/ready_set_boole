@@ -3,7 +3,7 @@
 int main() {
     std::vector<std::string> test_cases = {
         // Valid complex cases
-        "AB&C|", // (A AND B) OR C
+        "AB&C|",        // (A AND B) OR C
         "AB|C&",        // (A OR B) AND C
         "ABC&&",        // A AND B AND C
         "AB&!C|",       // (A AND B) OR (NOT C)

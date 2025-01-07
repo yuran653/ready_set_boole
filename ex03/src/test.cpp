@@ -1,14 +1,20 @@
 #include <iostream>
 #include "BooleanEvaluation.hpp"
 
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define RESET "\033[0m"
+#define OK "\xE2\x9C\x85"
+#define KO "\xE2\x9D\x8C"
+
 void correctValues(const std::string& rpn, bool value) {
     std::cout << std::boolalpha;
     bool result = BooleanEvaluation::booleanEvaluation(rpn);
     std::cout << rpn << " -> " << result << ", Expected: " << value << " -> ";
     if (result == value)
-        std::cout << "OK";
+        std::cout << GREEN << "OK" << RESET << OK;
     else
-        std::cout << "KO";
+        std::cout << RED << "KO" << RESET << KO;
     std::cout << std::endl;
 }
 
