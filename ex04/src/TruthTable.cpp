@@ -101,7 +101,7 @@ std::pair<std::string, std::vector<bool>> TruthTable::truth_table(const std::str
         table.first.append("|\n");
         // Iterate through all possible 2^n truth value combinations
         // where n is the number of the variables
-        for (size_t i = 0; i < (1 << vars.size()); i++) {
+        for (int i = 0; i < (1 << vars.size()); i++) {
             // Represent the current combination of truth values as a bitset
             std::bitset<26> values(i);
             // |-----------------------------------------|
