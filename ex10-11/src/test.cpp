@@ -30,8 +30,8 @@ int main() {
         std::pair<uint16_t, uint16_t> x_y = Curve::inverse_map(z);
         std::cout << "X: [" << x << "], Y: [" << y << "] -> "
                       << "Mapped value: " << z
-                      << " -> Inversed X: [" << x_y.first
-                      << "], Inversed Y: [" << x_y.second << "]";
+                      << " -> Decoded X: [" << x_y.first
+                      << "], Decoded Y: [" << x_y.second << "]";
         if (x == x_y.first && y == x_y.second) {
             std::cout << GREEN << " OK " << RESET << OK;
         } else {

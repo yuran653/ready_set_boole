@@ -50,44 +50,58 @@ void SetEvaluation::_create_universal_set() {
     }
 }
 
-void SetEvaluation::_complement() const{
+void SetEvaluation::_complement() const {
+    // Check if the stack is empty (no operand available)
     if (_stack_eval_set.empty())
         throw std::runtime_error("SetEvaluation: _compliment(): stack is empty");
+    // Extract the top set from the stack
     std::unique_ptr<std::set<int32_t>> set = std::move(_stack_eval_set.top());
     _stack_eval_set.pop();
+    // Create a new set to store the complement
     std::unique_ptr<std::set<int32_t>> complement = std::make_unique<std::set<int32_t>>();
-    for (int32_t element : *set) {
-        if (_universal_set.find(element) == _universal_set.end())
+    // Iterate through the universal set and find elements not in the operand set
+    for (int32_t element : _universal_set) {
+        if (set->find(element) == set->end())
             complement->insert(element);
     }
+    // Push the complement set back onto the stack
     _stack_eval_set.push(std::move(complement));
 }
 
 void SetEvaluation::_intersection() const {
+    // Check if there are at least two sets on the stack
     if (_stack_eval_set.size() < 2)
         throw std::runtime_error("SetEvaluation: _intersection(): not enough sets in the stack");
+    // Extract the top two sets from the stack
     std::unique_ptr<std::set<int32_t>> right = std::move(_stack_eval_set.top());
     _stack_eval_set.pop();
     std::unique_ptr<std::set<int32_t>> left = std::move(_stack_eval_set.top());
     _stack_eval_set.pop();
+    // Create a new set to store the intersection
     std::unique_ptr<std::set<int32_t>> intersection = std::make_unique<std::set<int32_t>>();
+    // Add elements present in both sets
     for (int32_t element : *left) {
-        if (right->find(element) != right->end())
+        if (right->find(element) != right->end()) // Element exists in both sets
             intersection->insert(element);
     }
+    // Push the intersection set back onto the stack
     _stack_eval_set.push(std::move(intersection));
 }
 
 void SetEvaluation::_union() const {
+    // Check if there are at least two sets on the stack
     if (_stack_eval_set.size() < 2)
         throw std::runtime_error("SetEvaluation: _union(): not enough sets in the stack");
+    // Extract the top two sets from the stack
     std::unique_ptr<std::set<int32_t>> right = std::move(_stack_eval_set.top());
     _stack_eval_set.pop();
     std::unique_ptr<std::set<int32_t>> left = std::move(_stack_eval_set.top());
     _stack_eval_set.pop();
+    // Add all elements from the left set to the right set
     for (int32_t element : *left) {
         right->insert(element);
     }
+    // Push the resulting union set back onto the stack
     _stack_eval_set.push(std::move(right));
 }
 
