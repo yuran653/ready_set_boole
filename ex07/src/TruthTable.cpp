@@ -83,7 +83,7 @@ std::pair<std::string, std::vector<bool>> TruthTable::truth_table(const std::str
         for (size_t i = 0; i <= vars.size(); i++)
             table.first.append("|---");
         table.first.append("|\n");
-        for (size_t i = 0; i < 1 << vars.size(); i++) {
+        for (int i = 0; i < (1 << vars.size()); i++) {
             std::bitset<26> values(i);
             table.first.append("| ");
             for (size_t j = 0; j < vars.size(); j++) {
